@@ -106,6 +106,17 @@
 - Dependencies가 추가되었으니 Gradle을 리프레시 해준다.
 - Build 문제가 있을 경우 해당 오류 내용을 다시 질문하여 자동으로 수정한다.
 
+### 실행 방법
+
+```bash
+./gradlew bootRun
+```
+
+### API Endpoints
+
+- **GET /hello**
+  - "Hello, World!"를 반환합니다.
+
 ### Step 3: Kotlin Multiplatform 관리자 화면 구현
 
 ---
