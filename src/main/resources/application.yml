@@ -6,14 +6,13 @@ spring:
       chroma:
         url: http://localhost:8000
   datasource:
-    url: jdbc:h2:mem:testdb
-    driverClassName: org.h2.Driver
-    username: sa
-    password: 
+    url: jdbc:mysql://localhost:3306/spring_mcp_db
+    username: root
+    password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
-  h2:
-    console:
-      enabled: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
