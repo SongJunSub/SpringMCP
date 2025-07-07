@@ -19,7 +19,19 @@ public class UrlShortenerService {
     private static SecureRandom random = new SecureRandom();
 
     public String shortenUrl(String longUrl) {
-        String shortKey = generateUniqueShortKey();
+        return shortenUrl(longUrl, null);
+    }
+
+    public String shortenUrl(String longUrl, String customKey) {
+        String shortKey;
+        if (customKey != null && !customKey.isEmpty()) {
+            if (urlEntryRepository.findByShortUrl(customKey) != null) {
+                throw new IllegalArgumentException("Custom key already in use.");
+            }
+            shortKey = customKey;
+        } else {
+            shortKey = generateUniqueShortKey();
+        }
         UrlEntry urlEntry = new UrlEntry(shortKey, longUrl);
         urlEntryRepository.save(urlEntry);
         return shortKey;

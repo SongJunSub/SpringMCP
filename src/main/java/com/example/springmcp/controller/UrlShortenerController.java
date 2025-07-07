@@ -15,8 +15,13 @@ public class UrlShortenerController {
     private UrlShortenerService urlShortenerService;
 
     @PostMapping
-    public ResponseEntity<String> shortenUrl(@RequestBody String longUrl) {
-        String shortKey = urlShortenerService.shortenUrl(longUrl);
+    public ResponseEntity<String> shortenUrl(@RequestBody String longUrl, @RequestParam(required = false) String customKey) {
+        String shortKey;
+        if (customKey != null && !customKey.isEmpty()) {
+            shortKey = urlShortenerService.shortenUrl(longUrl, customKey);
+        } else {
+            shortKey = urlShortenerService.shortenUrl(longUrl);
+        }
         return ResponseEntity.created(URI.create("/api/shorten/" + shortKey)).body(shortKey);
     }
 

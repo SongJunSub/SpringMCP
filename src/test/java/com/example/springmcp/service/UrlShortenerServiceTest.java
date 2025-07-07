@@ -44,6 +44,33 @@ public class UrlShortenerServiceTest {
     }
 
     @Test
+    public void shortenUrlWithCustomKeyShouldReturnCustomKey() {
+        String longUrl = "https://www.example.com";
+        String customKey = "mykey";
+        UrlEntry urlEntry = new UrlEntry(customKey, longUrl);
+
+        when(urlEntryRepository.findByShortUrl(customKey)).thenReturn(null);
+        when(urlEntryRepository.save(any(UrlEntry.class))).thenReturn(urlEntry);
+
+        String shortKey = urlShortenerService.shortenUrl(longUrl, customKey);
+
+        assertEquals(customKey, shortKey);
+    }
+
+    @Test
+    public void shortenUrlWithExistingCustomKeyShouldThrowException() {
+        String longUrl = "https://www.example.com";
+        String customKey = "existingkey";
+        UrlEntry existingUrlEntry = new UrlEntry(customKey, "https://www.oldurl.com");
+
+        when(urlEntryRepository.findByShortUrl(customKey)).thenReturn(existingUrlEntry);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            urlShortenerService.shortenUrl(longUrl, customKey);
+        });
+    }
+
+    @Test
     public void getLongUrlShouldReturnLongUrl() {
         String shortKey = "abc123";
         String longUrl = "https://www.google.com";
