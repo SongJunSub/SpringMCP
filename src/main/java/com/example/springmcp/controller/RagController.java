@@ -1,6 +1,7 @@
 
-package com.example.springmcp.controller;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.document.Document;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@Tag(name = "RAG API", description = "Endpoints for Retrieval Augmented Generation")
 public class RagController {
 
     @Autowired
@@ -22,8 +24,9 @@ public class RagController {
     @Autowired
     private VectorStore vectorStore;
 
+    @Operation(summary = "Get an answer based on retrieved documents", description = "Retrieves relevant documents and uses them to answer the user's question.")
     @GetMapping("/api/rag")
-    public String rag(@RequestParam(value = "message", defaultValue = "What is Spring AI?") String message) {
+    public String rag(@Parameter(description = "The question to answer", example = "What is Spring AI?") @RequestParam(value = "message", defaultValue = "What is Spring AI?") String message) {
         List<Document> similarDocuments = vectorStore.similaritySearch(message);
         String documents = similarDocuments.stream()
                 .map(doc -> doc.getFormattedContent())
