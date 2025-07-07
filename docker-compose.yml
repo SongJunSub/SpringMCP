@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: spring_mcp_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  chroma:
+    image: ghcr.io/chroma-core/chroma:latest
+    environment:
+      ANALYTICS_ANONYMOUS_ID: ""
+    ports:
+      - "8000:8000"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - chroma
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/spring_mcp_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_AI_VECTORSTORE_CHROMA_URL: http://chroma:8000
+      SPRING_AI_OPENAI_API_KEY: YOUR_API_KEY # Replace with your actual OpenAI API Key
+
+volumes:
+  mysql_data:

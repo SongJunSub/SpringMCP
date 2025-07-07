@@ -108,9 +108,26 @@
 
 ### 실행 방법
 
+#### 1. 로컬에서 실행
+
 ```bash
 ./gradlew bootRun
 ```
+
+#### 2. Docker Compose로 실행 (권장)
+
+**사전 준비:**
+
+1.  Docker Desktop 설치 및 실행
+2.  `docker-compose.yml` 파일의 `SPRING_AI_OPENAI_API_KEY`를 실제 OpenAI API 키로 교체
+
+**실행 명령어:**
+
+```bash
+docker compose up --build
+```
+
+애플리케이션은 `http://localhost:8080`에서 실행됩니다. MySQL은 `localhost:3306`, ChromaDB는 `localhost:8000`에서 접근 가능합니다.
 
 ### API Endpoints
 
