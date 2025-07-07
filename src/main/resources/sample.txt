@@ -1,0 +1,3 @@
+This is a sample text document for RAG testing.
+It contains some information about Spring AI and its capabilities.
+Spring AI aims to simplify the development of AI-powered applications.
