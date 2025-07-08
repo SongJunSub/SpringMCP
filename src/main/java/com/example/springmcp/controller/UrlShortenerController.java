@@ -1,9 +1,13 @@
 package com.example.springmcp.controller;
 
+import com.example.springmcp.dto.UrlShortenerRequest;
 import com.example.springmcp.service.UrlShortenerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +23,15 @@ public class UrlShortenerController {
     private UrlShortenerService urlShortenerService;
 
     @Operation(summary = "Shorten a URL", description = "Creates a short URL for a given long URL. Optionally, a custom key can be provided.")
+    @ApiResponse(responseCode = "201", description = "URL shortened successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content)
+    @ApiResponse(responseCode = "409", description = "Custom key already in use", content = @Content)
     @PostMapping
-    public ResponseEntity<String> shortenUrl(@RequestBody @Parameter(description = "The long URL to shorten", example = "https://www.google.com") String longUrl, @RequestParam(required = false) @Parameter(description = "Optional custom key for the short URL", example = "mycustomurl") String customKey) {
+    public ResponseEntity<String> shortenUrl(@Valid @RequestBody UrlShortenerRequest urlShortenerRequest) {
         String shortKey;
+        String longUrl = urlShortenerRequest.getLongUrl();
+        String customKey = urlShortenerRequest.getCustomKey();
+
         if (customKey != null && !customKey.isEmpty()) {
             shortKey = urlShortenerService.shortenUrl(longUrl, customKey);
         } else {
@@ -31,6 +41,8 @@ public class UrlShortenerController {
     }
 
     @Operation(summary = "Redirect to the original long URL", description = "Redirects to the original long URL associated with the given short key.")
+    @ApiResponse(responseCode = "302", description = "Redirect to original URL")
+    @ApiResponse(responseCode = "404", description = "URL not found", content = @Content)
     @GetMapping("/{shortKey}")
     public ResponseEntity<Void> redirectToLongUrl(@PathVariable @Parameter(description = "The short key of the URL", example = "abc123") String shortKey) {
         String longUrl = urlShortenerService.getLongUrl(shortKey);

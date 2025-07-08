@@ -1,6 +1,8 @@
 
 package com.example.springmcp.service;
 
+import com.example.springmcp.exception.DuplicateKeyException;
+import com.example.springmcp.exception.UrlNotFoundException;
 import com.example.springmcp.model.UrlEntry;
 import com.example.springmcp.repository.UrlEntryRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,14 +60,14 @@ public class UrlShortenerServiceTest {
     }
 
     @Test
-    public void shortenUrlWithExistingCustomKeyShouldThrowException() {
+    public void shortenUrlWithExistingCustomKeyShouldThrowDuplicateKeyException() {
         String longUrl = "https://www.example.com";
         String customKey = "existingkey";
         UrlEntry existingUrlEntry = new UrlEntry(customKey, "https://www.oldurl.com");
 
         when(urlEntryRepository.findByShortUrl(customKey)).thenReturn(existingUrlEntry);
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(DuplicateKeyException.class, () -> {
             urlShortenerService.shortenUrl(longUrl, customKey);
         });
     }
@@ -85,13 +87,13 @@ public class UrlShortenerServiceTest {
     }
 
     @Test
-    public void getLongUrlShouldReturnNullForInvalidKey() {
+    public void getLongUrlShouldThrowUrlNotFoundExceptionForInvalidKey() {
         String shortKey = "invalid";
 
         when(urlEntryRepository.findByShortUrl(shortKey)).thenReturn(null);
 
-        String retrievedLongUrl = urlShortenerService.getLongUrl(shortKey);
-
-        assertNull(retrievedLongUrl);
+        assertThrows(UrlNotFoundException.class, () -> {
+            urlShortenerService.getLongUrl(shortKey);
+        });
     }
 }

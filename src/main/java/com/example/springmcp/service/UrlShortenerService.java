@@ -1,12 +1,13 @@
 package com.example.springmcp.service;
 
+import com.example.springmcp.exception.DuplicateKeyException;
+import com.example.springmcp.exception.UrlNotFoundException;
 import com.example.springmcp.model.UrlEntry;
 import com.example.springmcp.repository.UrlEntryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
-import java.util.Base64;
 
 @Service
 public class UrlShortenerService {
@@ -26,7 +27,7 @@ public class UrlShortenerService {
         String shortKey;
         if (customKey != null && !customKey.isEmpty()) {
             if (urlEntryRepository.findByShortUrl(customKey) != null) {
-                throw new IllegalArgumentException("Custom key already in use.");
+                throw new DuplicateKeyException("Custom key '" + customKey + "' already in use.");
             }
             shortKey = customKey;
         } else {
@@ -39,7 +40,10 @@ public class UrlShortenerService {
 
     public String getLongUrl(String shortKey) {
         UrlEntry urlEntry = urlEntryRepository.findByShortUrl(shortKey);
-        return (urlEntry != null) ? urlEntry.getLongUrl() : null;
+        if (urlEntry == null) {
+            throw new UrlNotFoundException("URL not found for key: " + shortKey);
+        }
+        return urlEntry.getLongUrl();
     }
 
     private String generateUniqueShortKey() {
