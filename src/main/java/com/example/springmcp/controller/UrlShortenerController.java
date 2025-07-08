@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class UrlShortenerController {
     @Autowired
     private UrlShortenerService urlShortenerService;
 
-    @Operation(summary = "Shorten a URL", description = "Creates a short URL for a given long URL. Optionally, a custom key can be provided.")
+    @Operation(summary = "Shorten a URL", description = "Creates a short URL for a given long URL. Optionally, a custom key can be provided.", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponse(responseCode = "201", description = "URL shortened successfully")
     @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content)
     @ApiResponse(responseCode = "409", description = "Custom key already in use", content = @Content)
@@ -40,7 +41,7 @@ public class UrlShortenerController {
         return ResponseEntity.created(URI.create("/api/shorten/" + shortKey)).body(shortKey);
     }
 
-    @Operation(summary = "Redirect to the original long URL", description = "Redirects to the original long URL associated with the given short key.")
+    @Operation(summary = "Redirect to the original long URL", description = "Redirects to the original long URL associated with the given short key.", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponse(responseCode = "302", description = "Redirect to original URL")
     @ApiResponse(responseCode = "404", description = "URL not found", content = @Content)
     @GetMapping("/{shortKey}")

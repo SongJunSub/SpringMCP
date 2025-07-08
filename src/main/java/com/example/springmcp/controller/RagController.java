@@ -1,6 +1,9 @@
 
+package com.example.springmcp.controller;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.PromptTemplate;
@@ -24,7 +27,7 @@ public class RagController {
     @Autowired
     private VectorStore vectorStore;
 
-    @Operation(summary = "Get an answer based on retrieved documents", description = "Retrieves relevant documents and uses them to answer the user's question.")
+    @Operation(summary = "Get an answer based on retrieved documents", description = "Retrieves relevant documents and uses them to answer the user's question.", security = @SecurityRequirement(name = "basicAuth"))
     @GetMapping("/api/rag")
     public String rag(@Parameter(description = "The question to answer", example = "What is Spring AI?") @RequestParam(value = "message", defaultValue = "What is Spring AI?") String message) {
         List<Document> similarDocuments = vectorStore.similaritySearch(message);

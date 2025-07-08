@@ -3,6 +3,7 @@ package com.example.springmcp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ public class ChatController {
         this.chatClient = chatClientBuilder.build();
     }
 
-    @Operation(summary = "Get a response from the AI chatbot", description = "Sends a message to the AI and returns its response.")
+    @Operation(summary = "Get a response from the AI chatbot", description = "Sends a message to the AI and returns its response.", security = @SecurityRequirement(name = "basicAuth"))
     @GetMapping("/api/chat")
     public String chat(@Parameter(description = "The message to send to the AI", example = "What is the capital of France?") @RequestParam(value = "message", defaultValue = "Tell me a joke") String message) {
         return chatClient.prompt().user(message).call().content();
