@@ -1,4 +1,3 @@
-
 package com.example.springmcp.service;
 
 import com.example.springmcp.exception.DuplicateKeyException;
@@ -13,7 +12,7 @@ import org.mockito.MockitoAnnotations;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class UrlShortenerServiceTest {
 

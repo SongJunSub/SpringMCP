@@ -5,6 +5,8 @@ import com.example.springmcp.exception.UrlNotFoundException;
 import com.example.springmcp.model.UrlEntry;
 import com.example.springmcp.repository.UrlEntryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -19,10 +21,12 @@ public class UrlShortenerService {
     private static final String ALPHANUMERIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static SecureRandom random = new SecureRandom();
 
+    @CacheEvict(value = "urls", allEntries = true)
     public String shortenUrl(String longUrl) {
         return shortenUrl(longUrl, null);
     }
 
+    @CacheEvict(value = "urls", allEntries = true)
     public String shortenUrl(String longUrl, String customKey) {
         String shortKey;
         if (customKey != null && !customKey.isEmpty()) {
@@ -38,6 +42,7 @@ public class UrlShortenerService {
         return shortKey;
     }
 
+    @Cacheable("urls")
     public String getLongUrl(String shortKey) {
         UrlEntry urlEntry = urlEntryRepository.findByShortUrl(shortKey);
         if (urlEntry == null) {
