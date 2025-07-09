@@ -1,0 +1,5 @@
+CREATE TABLE url_entry (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    short_url VARCHAR(255) NOT NULL UNIQUE,
+    long_url VARCHAR(2048) NOT NULL
+);

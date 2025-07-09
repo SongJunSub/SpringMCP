@@ -151,6 +151,10 @@ Spring Cloud Sleuth를 사용하여 애플리케이션 내의 요청 흐름을 �
 
 RabbitMQ 관리 UI는 `http://localhost:15672`에서 접근할 수 있습니다. (기본 사용자명: `guest`, 비밀번호: `guest`)
 
+### 데이터베이스 마이그레이션 (Flyway)
+
+Flyway를 사용하여 데이터베이스 스키마 변경 이력을 관리합니다. 마이그레이션 스크립트는 `src/main/resources/db/migration` 디렉토리에 위치합니다.
+
 ### API Endpoints
 
 - **GET /hello**
