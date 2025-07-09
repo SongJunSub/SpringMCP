@@ -155,6 +155,10 @@ RabbitMQ 관리 UI는 `http://localhost:15672`에서 접근할 수 있습니다.
 
 Flyway를 사용하여 데이터베이스 스키마 변경 이력을 관리합니다. 마이그레이션 스크립트는 `src/main/resources/db/migration` 디렉토리에 위치합니다.
 
+### 통합 테스트 (Integration Tests)
+
+Testcontainers를 사용하여 통합 테스트 환경을 구축합니다. 이를 통해 MySQL, RabbitMQ, ChromaDB와 같은 실제 서비스들을 Docker 컨테이너로 실행하여 테스트를 수행합니다.
+
 ### API Endpoints
 
 - **GET /hello**
