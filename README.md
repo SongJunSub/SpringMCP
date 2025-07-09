@@ -139,6 +139,12 @@ Spring Boot Actuator와 Micrometer를 사용하여 애플리케이션 메트릭�
 
 메트릭은 `/actuator/prometheus` 엔드포인트에서 접근할 수 있습니다.
 
+### 분산 트레이싱 (Distributed Tracing)
+
+Spring Cloud Sleuth를 사용하여 애플리케이션 내의 요청 흐름을 추적하고, Zipkin과 같은 분산 트레이싱 시스템으로 트레이스 정보를 전송합니다.
+
+트레이스 정보는 `http://localhost:9411` (기본 Zipkin 서버 주소)로 전송됩니다.
+
 ### API Endpoints
 
 - **GET /hello**
