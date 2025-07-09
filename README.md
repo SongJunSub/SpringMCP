@@ -133,6 +133,12 @@ docker compose up --build
 
 애플리케이션 로그는 `logback-spring.xml` 설정을 통해 JSON 형식으로 출력됩니다. 이는 로그 분석 도구에서 쉽게 파싱하고 활용할 수 있도록 합니다.
 
+### 메트릭 수집 (Metrics)
+
+Spring Boot Actuator와 Micrometer를 사용하여 애플리케이션 메트릭을 수집합니다. Prometheus와 같은 모니터링 시스템과 연동하여 활용할 수 있습니다.
+
+메트릭은 `/actuator/prometheus` 엔드포인트에서 접근할 수 있습니다.
+
 ### API Endpoints
 
 - **GET /hello**
