@@ -18,6 +18,15 @@ services:
     ports:
       - "8000:8000"
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
   app:
     build:
       context: .
@@ -27,12 +36,14 @@ services:
     depends_on:
       - mysql
       - chroma
+      - rabbitmq
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/spring_mcp_db
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: password
       SPRING_AI_VECTORSTORE_CHROMA_URL: http://chroma:8000
       SPRING_AI_OPENAI_API_KEY: YOUR_API_KEY # Replace with your actual OpenAI API Key
+      SPRING_RABBITMQ_HOST: rabbitmq
 
 volumes:
   mysql_data:

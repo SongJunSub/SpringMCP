@@ -145,6 +145,12 @@ Spring Cloud Sleuth를 사용하여 애플리케이션 내의 요청 흐름을 �
 
 트레이스 정보는 `http://localhost:9411` (기본 Zipkin 서버 주소)로 전송됩니다.
 
+### 메시징 시스템 (RabbitMQ)
+
+비동기 처리를 위해 RabbitMQ 메시지 브로커를 사용합니다.
+
+RabbitMQ 관리 UI는 `http://localhost:15672`에서 접근할 수 있습니다. (기본 사용자명: `guest`, 비밀번호: `guest`)
+
 ### API Endpoints
 
 - **GET /hello**
