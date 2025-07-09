@@ -16,11 +16,11 @@ public abstract class AbstractIntegrationTest {
     @Container
     static MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.0")
             .withDatabaseName("testdb")
-            .withUsername("test")
-            .withPassword("test");
+            .withUsername("root")
+            .withPassword("password");
 
     @Container
-    static RabbitMQContainer rabbitmq = new RabbitMQContainer<>("rabbitmq:3-management")
+    static RabbitMQContainer rabbitmq = new RabbitMQContainer("rabbitmq:3-management")
             .withQueue("test-queue");
 
     @Container
@@ -32,6 +32,7 @@ public abstract class AbstractIntegrationTest {
         registry.add("spring.datasource.url", mysql::getJdbcUrl);
         registry.add("spring.datasource.username", mysql::getUsername);
         registry.add("spring.datasource.password", mysql::getPassword);
+        registry.add("spring.datasource.driver-class-name", () -> "com.mysql.cj.jdbc.Driver");
 
         registry.add("spring.rabbitmq.host", rabbitmq::getHost);
         registry.add("spring.rabbitmq.port", rabbitmq::getAmqpPort);
