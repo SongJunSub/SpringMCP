@@ -129,6 +129,10 @@ docker compose up --build
 
 애플리케이션은 `http://localhost:8080`에서 실행됩니다. MySQL은 `localhost:3306`, ChromaDB는 `localhost:8000`에서 접근 가능합니다.
 
+### 로깅 설정
+
+애플리케이션 로그는 `logback-spring.xml` 설정을 통해 JSON 형식으로 출력됩니다. 이는 로그 분석 도구에서 쉽게 파싱하고 활용할 수 있도록 합니다.
+
 ### API Endpoints
 
 - **GET /hello**
