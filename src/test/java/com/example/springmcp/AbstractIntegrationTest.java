@@ -10,6 +10,8 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
+import org.testcontainers.containers.wait.strategy.Wait;
+
 @Testcontainers
 public abstract class AbstractIntegrationTest {
 
@@ -24,8 +26,10 @@ public abstract class AbstractIntegrationTest {
             .withQueue("test-queue");
 
     @Container
-    static GenericContainer<?> chromadb = new GenericContainer<>(DockerImageName.parse("ghcr.io/chroma-core/chroma:latest"))
-            .withExposedPorts(8000);
+    static GenericContainer<?> chromadb = new GenericContainer<>(DockerImageName.parse("ghcr.io/chroma-core/chroma:0.4.18"))
+            .withExposedPorts(8000)
+            .withCommand("uvicorn chromadb.app:app --host 0.0.0.0 --port 8000")
+            .waitingFor(Wait.forLogMessage(".*Uvicorn running on http://0.0.0.0:8000.*", 1));
 
     @DynamicPropertySource
     static void registerProperties(DynamicPropertyRegistry registry) {
