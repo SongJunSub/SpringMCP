@@ -159,6 +159,10 @@ Flyway를 사용하여 데이터베이스 스키마 변경 이력을 관리합�
 
 Testcontainers를 사용하여 통합 테스트 환경을 구축합니다. 이를 통해 MySQL, RabbitMQ, ChromaDB와 같은 실제 서비스들을 Docker 컨테이너로 실행하여 테스트를 수행합니다.
 
+### 웹 UI (Web UI)
+
+간단한 URL 단축 웹 UI가 제공됩니다. 애플리케이션 실행 후 `http://localhost:8080/`으로 접속하여 사용할 수 있습니다.
+
 ### API Endpoints
 
 - **GET /hello**

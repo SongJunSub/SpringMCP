@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>URL Shortener</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        input[type="text"] { width: calc(100% - 100px); padding: 8px; margin-right: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        button { padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        .result { margin-top: 20px; padding: 10px; background-color: #e9ecef; border-radius: 4px; }
+        .error { color: red; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>URL Shortener</h1>
+        <form id="shortenForm">
+            <input type="text" id="longUrl" placeholder="Enter long URL here" required>
+            <input type="text" id="customKey" placeholder="Optional custom key">
+            <button type="submit">Shorten</button>
+        </form>
+        <div id="result" class="result" style="display: none;">
+            Shortened URL: <a id="shortenedLink" href="#" target="_blank"></a>
+        </div>
+        <div id="error" class="error" style="display: none;"></div>
+    </div>
+
+    <script>
+        document.getElementById('shortenForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const longUrl = document.getElementById('longUrl').value;
+            const customKey = document.getElementById('customKey').value;
+            const resultDiv = document.getElementById('result');
+            const errorDiv = document.getElementById('error');
+            const shortenedLink = document.getElementById('shortenedLink');
+
+            resultDiv.style.display = 'none';
+            errorDiv.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/shorten', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Basic ' + btoa('user:password') // Basic Auth
+                    },
+                    body: JSON.stringify({ longUrl: longUrl, customKey: customKey })
+                });
+
+                if (response.ok) {
+                    const shortKey = await response.text();
+                    const fullShortUrl = window.location.origin + '/api/shorten/' + shortKey;
+                    shortenedLink.href = fullShortUrl;
+                    shortenedLink.textContent = fullShortUrl;
+                    resultDiv.style.display = 'block';
+                } else {
+                    const errorText = await response.text();
+                    errorDiv.textContent = 'Error: ' + errorText;
+                    errorDiv.style.display = 'block';
+                }
+            } catch (e) {
+                errorDiv.textContent = 'Network error: ' + e.message;
+                errorDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
