@@ -208,6 +208,17 @@ Resilience4j의 Rate Limiter를 사용하여 API 요청 속도를 제한합니�
 - `limitForPeriod`: 10 (1초당 허용되는 요청 수)
 - `limitRefreshPeriod`: 1s (제한이 재설정되는 주기)
 
+### 컨테이너 오케스트레이션 (Kubernetes/Helm) 준비
+
+애플리케이션을 Kubernetes 환경에 배포하기 위한 Manifest 파일들이 `k8s/` 디렉토리에 준비되어 있습니다.
+
+- `mysql-deployment.yaml`: MySQL 데이터베이스 배포 및 서비스
+- `rabbitmq-deployment.yaml`: RabbitMQ 메시지 브로커 배포 및 서비스
+- `chromadb-deployment.yaml`: ChromaDB 벡터 데이터베이스 배포 및 서비스
+- `app-deployment.yaml`: Spring Boot 애플리케이션 배포 및 서비스
+
+이 파일들을 사용하여 `kubectl apply -f k8s/` 명령으로 Kubernetes 클러스터에 배포할 수 있습니다.
+
 ### 웹 UI (Web UI)
 
 간단한 URL 단축 웹 UI가 제공됩니다. 애플리케이션 실행 후 `http://localhost:8080/`으로 접속하여 사용할 수 있습니다.
