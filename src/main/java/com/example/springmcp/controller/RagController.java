@@ -1,24 +1,7 @@
 
-package com.example.springmcp.controller;
-
-import com.example.springmcp.model.UrlEntry;
-import com.example.springmcp.repository.UrlEntryRepository;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.prompt.PromptTemplate;
-import org.springframework.ai.document.Document;
-import org.springframework.ai.vectorstore.VectorStore;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 @RestController
 @Tag(name = "RAG API", description = "Endpoints for Retrieval Augmented Generation")
@@ -33,18 +16,38 @@ public class RagController {
     @Autowired
     private UrlEntryRepository urlEntryRepository;
 
+    private Set<String> expandQuery(String query) {
+        Set<String> expandedQueries = new HashSet<>();
+        expandedQueries.add(query);
+
+        // Simple example of query expansion
+        if (query.toLowerCase().contains("spring ai")) {
+            expandedQueries.add("spring artificial intelligence");
+            expandedQueries.add("spring machine learning");
+        } else if (query.toLowerCase().contains("url")) {
+            expandedQueries.add("shorten link");
+            expandedQueries.add("web address");
+        }
+        return expandedQueries;
+    }
+
     @Operation(summary = "Get an answer based on retrieved documents", description = "Retrieves relevant documents and uses them to answer the user's question.", security = @SecurityRequirement(name = "basicAuth"))
     @GetMapping("/api/rag")
     public String rag(@Parameter(description = "The question to answer", example = "What is Spring AI?") @RequestParam(value = "message", defaultValue = "What is Spring AI?") String message) {
-        List<Document> vectorDocuments = vectorStore.similaritySearch(message);
+        Set<String> expandedQueries = expandQuery(message);
+        List<Document> allDocuments = new java.util.ArrayList<>();
 
-        // Simple keyword search on longUrl
-        List<Document> keywordDocuments = urlEntryRepository.findAll().stream()
-                .filter(entry -> entry.getLongUrl().contains(message) || entry.getShortUrl().contains(message))
-                .map(entry -> new Document("URL Entry: " + entry.getShortUrl() + " -> " + entry.getLongUrl()))
-                .collect(Collectors.toList());
+        for (String query : expandedQueries) {
+            allDocuments.addAll(vectorStore.similaritySearch(query));
 
-        String documents = Stream.concat(vectorDocuments.stream(), keywordDocuments.stream())
+            // Simple keyword search on longUrl
+            allDocuments.addAll(urlEntryRepository.findAll().stream()
+                    .filter(entry -> entry.getLongUrl().contains(query) || entry.getShortUrl().contains(query))
+                    .map(entry -> new Document("URL Entry: " + entry.getShortUrl() + " -> " + entry.getLongUrl()))
+                    .collect(Collectors.toList()));
+        }
+
+        String documents = allDocuments.stream()
                 .map(doc -> doc.getFormattedContent())
                 .distinct() // Remove duplicates based on formatted content
                 .collect(Collectors.joining(System.lineSeparator()));
