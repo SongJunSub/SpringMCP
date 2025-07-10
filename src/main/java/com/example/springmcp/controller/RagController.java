@@ -1,6 +1,8 @@
 
 package com.example.springmcp.controller;
 
+import com.example.springmcp.model.UrlEntry;
+import com.example.springmcp.repository.UrlEntryRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @Tag(name = "RAG API", description = "Endpoints for Retrieval Augmented Generation")
@@ -27,11 +30,21 @@ public class RagController {
     @Autowired
     private VectorStore vectorStore;
 
+    @Autowired
+    private UrlEntryRepository urlEntryRepository;
+
     @Operation(summary = "Get an answer based on retrieved documents", description = "Retrieves relevant documents and uses them to answer the user's question.", security = @SecurityRequirement(name = "basicAuth"))
     @GetMapping("/api/rag")
     public String rag(@Parameter(description = "The question to answer", example = "What is Spring AI?") @RequestParam(value = "message", defaultValue = "What is Spring AI?") String message) {
-        List<Document> similarDocuments = vectorStore.similaritySearch(message);
-        String documents = similarDocuments.stream()
+        List<Document> vectorDocuments = vectorStore.similaritySearch(message);
+
+        // Simple keyword search on longUrl
+        List<Document> keywordDocuments = urlEntryRepository.findAll().stream()
+                .filter(entry -> entry.getLongUrl().contains(message) || entry.getShortUrl().contains(message))
+                .map(entry -> new Document("URL Entry: " + entry.getShortUrl() + " -> " + entry.getLongUrl()))
+                .collect(Collectors.toList());
+
+        String documents = Stream.concat(vectorDocuments.stream(), keywordDocuments.stream())
                 .map(doc -> doc.getFormattedContent())
                 .collect(Collectors.joining(System.lineSeparator()));
 
