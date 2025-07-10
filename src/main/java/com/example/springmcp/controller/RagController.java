@@ -46,6 +46,7 @@ public class RagController {
 
         String documents = Stream.concat(vectorDocuments.stream(), keywordDocuments.stream())
                 .map(doc -> doc.getFormattedContent())
+                .distinct() // Remove duplicates based on formatted content
                 .collect(Collectors.joining(System.lineSeparator()));
 
         PromptTemplate promptTemplate = new PromptTemplate("""
