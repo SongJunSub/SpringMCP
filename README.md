@@ -200,6 +200,14 @@ JWT(JSON Web Token) 기반 인증을 도입하여 API 보안을 강화했습니�
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
+### API Rate Limiting
+
+Resilience4j의 Rate Limiter를 사용하여 API 요청 속도를 제한합니다. 현재 `RAG API`에 기본 정책이 적용되어 있습니다.
+
+기본 정책:
+- `limitForPeriod`: 10 (1초당 허용되는 요청 수)
+- `limitRefreshPeriod`: 1s (제한이 재설정되는 주기)
+
 ### 웹 UI (Web UI)
 
 간단한 URL 단축 웹 UI가 제공됩니다. 애플리케이션 실행 후 `http://localhost:8080/`으로 접속하여 사용할 수 있습니다.

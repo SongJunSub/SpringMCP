@@ -3,6 +3,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+
 @RestController
 @Tag(name = "RAG API", description = "Endpoints for Retrieval Augmented Generation")
 public class RagController {
@@ -33,6 +35,7 @@ public class RagController {
 
     @Operation(summary = "Get an answer based on retrieved documents", description = "Retrieves relevant documents and uses them to answer the user's question.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping("/api/rag")
+    @RateLimiter(name = "default")
     public String rag(@Parameter(description = "The question to answer", example = "What is Spring AI?") @RequestParam(value = "message", defaultValue = "What is Spring AI?") String message) {
         Set<String> expandedQueries = expandQuery(message);
         List<Document> allDocuments = new java.util.ArrayList<>();

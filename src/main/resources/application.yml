@@ -34,6 +34,14 @@ spring:
         jwt:
           jwk-set-uri: http://localhost:8080/oauth2/jwks
 
+resilience4j.ratelimiter:
+  instances:
+    default:
+      limitForPeriod: 10
+      limitRefreshPeriod: 1s
+      timeoutDuration: 0s
+      registerHealthIndicator: true
+
 management:
   endpoints:
     web:
