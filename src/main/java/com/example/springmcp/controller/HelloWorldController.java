@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Hello World API", description = "Simple Hello World endpoint")
 public class HelloWorldController {
 
-    @Operation(summary = "Returns a greeting message", description = "Returns \"Hello, World!\"", security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Returns a greeting message", description = "Returns "Hello, World!"", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping("/hello")
     public String hello() {
         return "Hello, World!";

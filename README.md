@@ -173,6 +173,33 @@ Testcontainers를 사용하여 통합 테스트 환경을 구축합니다. 이�
 
 미리 정의된 동의어 목록을 사용하여 사용자 질의를 확장합니다. 이는 검색 범위를 넓혀 더 많은 관련 문서를 찾을 수 있도록 돕습니다.
 
+### JWT 인증 (JWT Authentication)
+
+JWT(JSON Web Token) 기반 인증을 도입하여 API 보안을 강화했습니다.
+
+#### 토큰 발급
+
+`POST /auth/login` 엔드포인트를 사용하여 사용자명(`user`)과 비밀번호(`password`)로 토큰을 발급받을 수 있습니다.
+
+```json
+{
+  "username": "user",
+  "password": "password"
+}
+```
+
+응답으로 받은 JWT 토큰을 사용하여 인증이 필요한 API 요청을 수행할 수 있습니다.
+
+#### 토큰 사용
+
+인증이 필요한 API 요청 시 `Authorization` 헤더에 `Bearer <YOUR_JWT_TOKEN>` 형식으로 토큰을 포함해야 합니다.
+
+예시:
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
 ### 웹 UI (Web UI)
 
 간단한 URL 단축 웹 UI가 제공됩니다. 애플리케이션 실행 후 `http://localhost:8080/`으로 접속하여 사용할 수 있습니다.

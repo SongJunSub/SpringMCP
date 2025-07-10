@@ -31,7 +31,7 @@ public class RagController {
         return expandedQueries;
     }
 
-    @Operation(summary = "Get an answer based on retrieved documents", description = "Retrieves relevant documents and uses them to answer the user's question.", security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Get an answer based on retrieved documents", description = "Retrieves relevant documents and uses them to answer the user's question.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping("/api/rag")
     public String rag(@Parameter(description = "The question to answer", example = "What is Spring AI?") @RequestParam(value = "message", defaultValue = "What is Spring AI?") String message) {
         Set<String> expandedQueries = expandQuery(message);

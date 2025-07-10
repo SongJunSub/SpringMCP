@@ -22,7 +22,7 @@ public class ChatController {
         this.chatClient = chatClientBuilder.build();
     }
 
-    @Operation(summary = "Get a response from the AI chatbot", description = "Sends a message to the AI and returns its response.", security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Get a response from the AI chatbot", description = "Sends a message to the AI and returns its response.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping("/api/chat")
     public String chat(@Parameter(description = "The message to send to the AI", example = "What is the capital of France?") @RequestParam(value = "message", defaultValue = "Tell me a joke") String message) {
         return chatClient.prompt().user(message).call().content();
