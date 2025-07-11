@@ -1,9 +1,10 @@
 
 package com.example.springmcp.config;
 
+import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.reader.pdf.PagePdfDocumentReader;
 import org.springframework.ai.reader.TextReader;
-import org.springframework.ai.transformer.splitter.TokenTextSplitter;
+import org.springframework.ai.transformer.splitter.SemanticChunker;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +24,9 @@ public class RagConfig {
     @Autowired
     private VectorStore vectorStore;
 
+    @Autowired
+    private EmbeddingModel embeddingModel;
+
     @PostConstruct
     public void init() throws MalformedURLException {
         // Load PDF document
@@ -33,9 +37,9 @@ public class RagConfig {
         Resource textResource = new ClassPathResource("sample.txt");
         TextReader textReader = new TextReader(textResource);
 
-        TokenTextSplitter textSplitter = new TokenTextSplitter();
+        SemanticChunker semanticChunker = new SemanticChunker(embeddingModel);
 
         // Combine documents from both readers
-        vectorStore.accept(textSplitter.apply(Stream.concat(pdfReader.get().stream(), textReader.get().stream()).collect(Collectors.toList())));
+        vectorStore.accept(semanticChunker.apply(Stream.concat(pdfReader.get().stream(), textReader.get().stream()).collect(Collectors.toList())));
     }
 }

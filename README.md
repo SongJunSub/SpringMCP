@@ -219,6 +219,10 @@ Resilience4j의 Rate Limiter를 사용하여 API 요청 속도를 제한합니�
 
 이 파일들을 사용하여 `kubectl apply -f k8s/` 명령으로 Kubernetes 클러스터에 배포할 수 있습니다.
 
+#### 문맥 기반 청킹 (Contextual Chunking)
+
+`SemanticChunker`를 사용하여 문서의 의미론적 경계를 기반으로 청킹을 수행합니다. 이는 RAG 파이프라인에 더 관련성 높은 문맥을 제공하여 답변 품질을 향상시킵니다.
+
 ### 웹 UI (Web UI)
 
 간단한 URL 단축 웹 UI가 제공됩니다. 애플리케이션 실행 후 `http://localhost:8080/`으로 접속하여 사용할 수 있습니다.
