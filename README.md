@@ -231,6 +231,16 @@ Resilience4j의 Rate Limiter를 사용하여 API 요청 속도를 제한합니�
 
 `SemanticChunker`를 사용하여 문서의 의미론적 경계를 기반으로 청킹을 수행합니다. 이는 RAG 파이프라인에 더 관련성 높은 문맥을 제공하여 답변 품질을 향상시킵니다.
 
+### 성능 최적화 (Performance Optimization)
+
+#### 데이터베이스 인덱싱
+
+`url_entry` 테이블의 `short_url` 컬럼에 인덱스를 추가하여 조회 성능을 향상시켰습니다.
+
+#### 연결 풀 (HikariCP) 튜닝
+
+`application.yml`에서 HikariCP 연결 풀 설정을 조정하여 애플리케이션의 부하에 맞는 최적의 연결 풀 크기 및 타임아웃을 설정했습니다.
+
 ### 웹 UI (Web UI)
 
 간단한 URL 단축 웹 UI가 제공됩니다. 애플리케이션 실행 후 `http://localhost:8080/`으로 접속하여 사용할 수 있습니다.
