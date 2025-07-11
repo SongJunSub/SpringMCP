@@ -151,6 +151,14 @@ Spring Cloud Sleuth를 사용하여 애플리케이션 내의 요청 흐름을 �
 
 RabbitMQ 관리 UI는 `http://localhost:15672`에서 접근할 수 있습니다. (기본 사용자명: `guest`, 비밀번호: `guest`)
 
+#### 이벤트 발행/구독 모델 확장
+
+`MessageProducer`와 `MessageConsumer`를 통해 RabbitMQ를 활용한 간단한 이벤트 발행/구독 모델을 구현했습니다. `test-queue`로 메시지를 보내고 받을 수 있습니다.
+
+#### Dead Letter Queue (DLQ) 설정
+
+메시지 처리 실패 시 메시지가 `test-queue.dlq`로 이동하도록 DLQ를 설정했습니다. 이는 메시지 유실을 방지하고 실패한 메시지를 재처리할 수 있도록 합니다.
+
 ### 데이터베이스 마이그레이션 (Flyway)
 
 Flyway를 사용하여 데이터베이스 스키마 변경 이력을 관리합니다. 마이그레이션 스크립트는 `src/main/resources/db/migration` 디렉토리에 위치합니다.
