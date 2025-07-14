@@ -241,6 +241,15 @@ Resilience4j의 Rate Limiter를 사용하여 API 요청 속도를 제한합니�
 
 `application.yml`에서 HikariCP 연결 풀 설정을 조정하여 애플리케이션의 부하에 맞는 최적의 연결 풀 크기 및 타임아웃을 설정했습니다.
 
+### 회복성 패턴 (Circuit Breaker)
+
+Resilience4j의 Circuit Breaker를 사용하여 외부 서비스 호출 시 발생할 수 있는 장애가 전체 시스템으로 확산되는 것을 방지합니다. 현재 `Chat API`에 `externalService` 정책이 적용되어 있습니다.
+
+기본 정책:
+- `failureRateThreshold`: 50% (실패율 임계값)
+- `slowCallRateThreshold`: 100% (느린 호출 비율 임계값)
+- `slowCallDurationThreshold`: 2s (느린 호출 시간 임계값)
+
 ### 웹 UI (Web UI)
 
 간단한 URL 단축 웹 UI가 제공됩니다. 애플리케이션 실행 후 `http://localhost:8080/`으로 접속하여 사용할 수 있습니다.

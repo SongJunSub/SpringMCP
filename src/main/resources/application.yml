@@ -57,6 +57,19 @@ resilience4j.ratelimiter:
       timeoutDuration: 0s
       registerHealthIndicator: true
 
+resilience4j.circuitbreaker:
+  instances:
+    externalService:
+      failureRateThreshold: 50
+      slowCallRateThreshold: 100
+      slowCallDurationThreshold: 2s
+      permittedNumberOfCallsInHalfOpenState: 3
+      maxWaitDurationInHalfOpenState: 10s
+      slidingWindowType: COUNT_BASED
+      slidingWindowSize: 10
+      minimumNumberOfCalls: 5
+      automaticTransitionFromOpenToHalfOpenEnabled: true
+
 management:
   endpoints:
     web:
