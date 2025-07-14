@@ -250,6 +250,12 @@ Resilience4j의 Circuit Breaker를 사용하여 외부 서비스 호출 시 발�
 - `slowCallRateThreshold`: 100% (느린 호출 비율 임계값)
 - `slowCallDurationThreshold`: 2s (느린 호출 시간 임계값)
 
+### 국제화 (Internationalization - i18n) 지원
+
+애플리케이션의 메시지 및 UI 텍스트를 여러 언어로 제공합니다. `messages.properties` 파일을 통해 기본 메시지를 정의하고, `messages_ko.properties`, `messages_en.properties`와 같은 파일을 통해 언어별 메시지를 제공합니다.
+
+`lang` 파라미터를 사용하여 언어를 변경할 수 있습니다. (예: `http://localhost:8080/?lang=ko`)
+
 ### 웹 UI (Web UI)
 
 간단한 URL 단축 웹 UI가 제공됩니다. 애플리케이션 실행 후 `http://localhost:8080/`으로 접속하여 사용할 수 있습니다.

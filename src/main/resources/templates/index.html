@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>URL Shortener</title>
+    <title th:text="#{app.name}"></title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
         .container { max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
@@ -15,14 +15,14 @@
 </head>
 <body>
     <div class="container">
-        <h1>URL Shortener</h1>
+        <h1 th:text="#{welcome.message}"></h1>
         <form id="shortenForm">
-            <input type="text" id="longUrl" placeholder="Enter long URL here" required>
-            <input type="text" id="customKey" placeholder="Optional custom key">
-            <button type="submit">Shorten</button>
+            <input type="text" id="longUrl" th:placeholder="#{placeholder.longUrl}" required>
+            <input type="text" id="customKey" th:placeholder="#{placeholder.customKey}">
+            <button type="submit" th:text="#{button.shorten}"></button>
         </form>
         <div id="result" class="result" style="display: none;">
-            Shortened URL: <a id="shortenedLink" href="#" target="_blank"></a>
+            <span th:text="#{label.shortenedUrl}"></span>: <a id="shortenedLink" href="#" target="_blank"></a>
         </div>
         <div id="error" class="error" style="display: none;"></div>
     </div>
