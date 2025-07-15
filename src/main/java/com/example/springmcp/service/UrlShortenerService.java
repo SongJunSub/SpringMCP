@@ -55,19 +55,15 @@ public class UrlShortenerService {
     }
 
     private String generateUniqueShortKey() {
-        StringBuilder sb = new StringBuilder(KEY_LENGTH);
-        for (int i = 0; i < KEY_LENGTH; i++) {
-            sb.append(ALPHANUMERIC.charAt(random.nextInt(ALPHANUMERIC.length())));
-        }
-        String shortKey = sb.toString();
-        // Ensure the key starts with a letter
-        if (!Character.isLetter(shortKey.charAt(0))) {
-            return generateUniqueShortKey(); // Regenerate if it doesn't start with a letter
-        }
-        // Check for uniqueness in the database
-        if (urlEntryRepository.findByShortUrl(shortKey) != null) {
-            return generateUniqueShortKey(); // Regenerate if not unique
-        }
+        String shortKey;
+        do {
+            StringBuilder sb = new StringBuilder(KEY_LENGTH);
+            for (int i = 0; i < KEY_LENGTH; i++) {
+                sb.append(ALPHANUMERIC.charAt(random.nextInt(ALPHANUMERIC.length())));
+            }
+            shortKey = sb.toString();
+        } while (!Character.isLetter(shortKey.charAt(0)) || urlEntryRepository.findByShortUrl(shortKey) != null);
+        
         return shortKey;
     }
 }
