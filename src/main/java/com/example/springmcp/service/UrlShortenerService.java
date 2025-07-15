@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 
@@ -24,11 +25,13 @@ public class UrlShortenerService {
     private static final String ALPHANUMERIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static SecureRandom random = new SecureRandom();
 
+    @Transactional
     @CachePut(value = "urls", key = "#result")
     public String shortenUrl(String longUrl) {
         return shortenUrl(longUrl, null);
     }
 
+    @Transactional
     @CachePut(value = "urls", key = "#result")
     public String shortenUrl(String longUrl, String customKey) {
         String shortKey;
