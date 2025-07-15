@@ -14,8 +14,11 @@ import java.security.SecureRandom;
 @Service
 public class UrlShortenerService {
 
-    @Autowired
-    private UrlEntryRepository urlEntryRepository;
+    private final UrlEntryRepository urlEntryRepository;
+
+    public UrlShortenerService(UrlEntryRepository urlEntryRepository) {
+        this.urlEntryRepository = urlEntryRepository;
+    }
 
     private static final int KEY_LENGTH = 6;
     private static final String ALPHANUMERIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

@@ -20,8 +20,11 @@ import java.net.URI;
 @Tag(name = "URL Shortener API", description = "Endpoints for URL shortening and redirection")
 public class UrlShortenerController {
 
-    @Autowired
-    private UrlShortenerService urlShortenerService;
+    private final UrlShortenerService urlShortenerService;
+
+    public UrlShortenerController(UrlShortenerService urlShortenerService) {
+        this.urlShortenerService = urlShortenerService;
+    }
 
     @Operation(summary = "Shorten a URL", description = "Creates a short URL for a given long URL. Optionally, a custom key can be provided.", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponse(responseCode = "201", description = "URL shortened successfully")
