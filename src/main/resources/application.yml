@@ -79,3 +79,8 @@ management:
     export:
       prometheus:
         enabled: true
+
+app:
+  shortener:
+    key-length: 6
+    alphanumeric-characters: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"

@@ -6,6 +6,8 @@ import com.example.springmcp.model.UrlEntry;
 import com.example.springmcp.repository.UrlEntryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,8 +23,12 @@ public class UrlShortenerService {
         this.urlEntryRepository = urlEntryRepository;
     }
 
-    private static final int KEY_LENGTH = 6;
-    private static final String ALPHANUMERIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    @Value("${app.shortener.key-length}")
+    private int keyLength;
+
+    @Value("${app.shortener.alphanumeric-characters}")
+    private String alphanumeric;
+
     private static SecureRandom random = new SecureRandom();
 
     @Transactional
@@ -64,9 +70,9 @@ public class UrlShortenerService {
     private String generateUniqueShortKey() {
         String shortKey;
         do {
-            StringBuilder sb = new StringBuilder(KEY_LENGTH);
-            for (int i = 0; i < KEY_LENGTH; i++) {
-                sb.append(ALPHANUMERIC.charAt(random.nextInt(ALPHANUMERIC.length())));
+            StringBuilder sb = new StringBuilder(keyLength);
+            for (int i = 0; i < keyLength; i++) {
+                sb.append(alphanumeric.charAt(random.nextInt(alphanumeric.length())));
             }
             shortKey = sb.toString();
         } while (!Character.isLetter(shortKey.charAt(0)) || urlEntryRepository.findByShortUrl(shortKey) != null);
