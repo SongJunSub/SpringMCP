@@ -24,12 +24,12 @@ public class UrlShortenerService {
     private static final String ALPHANUMERIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static SecureRandom random = new SecureRandom();
 
-    @CacheEvict(value = "urls", allEntries = true)
+    @CachePut(value = "urls", key = "#result")
     public String shortenUrl(String longUrl) {
         return shortenUrl(longUrl, null);
     }
 
-    @CacheEvict(value = "urls", allEntries = true)
+    @CachePut(value = "urls", key = "#result")
     public String shortenUrl(String longUrl, String customKey) {
         String shortKey;
         if (customKey != null && !customKey.isEmpty()) {
@@ -45,13 +45,17 @@ public class UrlShortenerService {
         return shortKey;
     }
 
-    @Cacheable("urls")
-    public String getLongUrl(String shortKey) {
+    @Cacheable(value = "urls", key = "#shortKey")
+    public UrlEntry getUrlEntry(String shortKey) {
         UrlEntry urlEntry = urlEntryRepository.findByShortUrl(shortKey);
         if (urlEntry == null) {
             throw new UrlNotFoundException("URL not found for key: " + shortKey);
         }
-        return urlEntry.getLongUrl();
+        return urlEntry;
+    }
+
+    public String getLongUrl(String shortKey) {
+        return getUrlEntry(shortKey).getLongUrl();
     }
 
     private String generateUniqueShortKey() {
