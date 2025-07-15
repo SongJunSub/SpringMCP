@@ -113,4 +113,35 @@ public class UrlShortenerControllerIntegrationTest extends AbstractIntegrationTe
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    public void shortenUrlWithInvalidCustomKeyShouldReturnBadRequest() throws Exception {
+        String longUrl = "https://www.example.com";
+        String invalidCustomKey = "123456"; // Starts with number, not letter
+        UrlShortenerRequest request = new UrlShortenerRequest();
+        request.setLongUrl(longUrl);
+        request.setCustomKey(invalidCustomKey);
+
+        mockMvc.perform(post("/api/shorten")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.customKey").exists()); // Assuming validation error message is in customKey field
+    }
+
+    @Test
+    public void shortenUrlResponseShouldContainCorrectData() throws Exception {
+        String longUrl = "https://www.responsecheck.com";
+        UrlShortenerRequest request = new UrlShortenerRequest();
+        request.setLongUrl(longUrl);
+
+        mockMvc.perform(post("/api/shorten")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.shortKey").exists())
+                .andExpect(jsonPath("$.longUrl").value(longUrl))
+                .andExpect(jsonPath("$.shortUrl").exists())
+                .andExpect(jsonPath("$.createdAt").exists());
+    }
 }
