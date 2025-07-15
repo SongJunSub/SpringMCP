@@ -32,14 +32,14 @@ public class UrlShortenerService {
     private static SecureRandom random = new SecureRandom();
 
     @Transactional
-    @CachePut(value = "urls", key = "#result")
-    public String shortenUrl(String longUrl) {
+    @CachePut(value = "urls", key = "#result.shortUrl")
+    public UrlEntry shortenUrl(String longUrl) {
         return shortenUrl(longUrl, null);
     }
 
     @Transactional
-    @CachePut(value = "urls", key = "#result")
-    public String shortenUrl(String longUrl, String customKey) {
+    @CachePut(value = "urls", key = "#result.shortUrl")
+    public UrlEntry shortenUrl(String longUrl, String customKey) {
         String shortKey;
         if (customKey != null && !customKey.isEmpty()) {
             if (urlEntryRepository.findByShortUrl(customKey) != null) {
@@ -51,7 +51,7 @@ public class UrlShortenerService {
         }
         UrlEntry urlEntry = new UrlEntry(shortKey, longUrl);
         urlEntryRepository.save(urlEntry);
-        return shortKey;
+        return urlEntry;
     }
 
     @Cacheable(value = "urls", key = "#shortKey")

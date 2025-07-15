@@ -1,6 +1,8 @@
 package com.example.springmcp.controller;
 
 import com.example.springmcp.dto.UrlShortenerRequest;
+import com.example.springmcp.dto.UrlShortenerResponse;
+import com.example.springmcp.model.UrlEntry;
 import com.example.springmcp.service.UrlShortenerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -31,17 +33,19 @@ public class UrlShortenerController {
     @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content)
     @ApiResponse(responseCode = "409", description = "Custom key already in use", content = @Content)
     @PostMapping
-    public ResponseEntity<String> shortenUrl(@Valid @RequestBody UrlShortenerRequest urlShortenerRequest) {
-        String shortKey;
+    public ResponseEntity<UrlShortenerResponse> shortenUrl(@Valid @RequestBody UrlShortenerRequest urlShortenerRequest) {
+        UrlEntry urlEntry;
         String longUrl = urlShortenerRequest.getLongUrl();
         String customKey = urlShortenerRequest.getCustomKey();
 
         if (customKey != null && !customKey.isEmpty()) {
-            shortKey = urlShortenerService.shortenUrl(longUrl, customKey);
+            urlEntry = urlShortenerService.shortenUrl(longUrl, customKey);
         } else {
-            shortKey = urlShortenerService.shortenUrl(longUrl);
+            urlEntry = urlShortenerService.shortenUrl(longUrl);
         }
-        return ResponseEntity.created(URI.create("/api/shorten/" + shortKey)).body(shortKey);
+        String shortUrl = "http://localhost:8080/api/shorten/" + urlEntry.getShortUrl(); // TODO: Replace with actual domain
+        UrlShortenerResponse response = new UrlShortenerResponse(urlEntry.getShortUrl(), urlEntry.getLongUrl(), shortUrl, urlEntry.getCreatedAt());
+        return ResponseEntity.created(URI.create("/api/shorten/" + urlEntry.getShortUrl())).body(response);
     }
 
     @Operation(summary = "Redirect to the original long URL", description = "Redirects to the original long URL associated with the given short key.", security = @SecurityRequirement(name = "bearerAuth"))
