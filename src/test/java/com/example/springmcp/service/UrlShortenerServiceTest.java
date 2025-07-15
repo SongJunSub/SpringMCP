@@ -34,14 +34,14 @@ public class UrlShortenerServiceTest {
 
         when(urlEntryRepository.save(any(UrlEntry.class))).thenReturn(urlEntry);
         when(urlEntryRepository.findByShortUrl(any(String.class)))
-                .thenReturn(null) // For initial uniqueness check
-                .thenReturn(urlEntry); // For the save operation
+                .thenReturn(null); // For initial uniqueness check
 
-        String shortKey = urlShortenerService.shortenUrl(longUrl);
+        UrlEntry returnedUrlEntry = urlShortenerService.shortenUrl(longUrl);
 
-        assertNotNull(shortKey);
-        assertEquals(6, shortKey.length());
-        assertTrue(Character.isLetter(shortKey.charAt(0)));
+        assertNotNull(returnedUrlEntry);
+        assertNotNull(returnedUrlEntry.getShortUrl());
+        assertEquals(6, returnedUrlEntry.getShortUrl().length());
+        assertTrue(Character.isLetter(returnedUrlEntry.getShortUrl().charAt(0)));
     }
 
     @Test
@@ -53,9 +53,9 @@ public class UrlShortenerServiceTest {
         when(urlEntryRepository.findByShortUrl(customKey)).thenReturn(null);
         when(urlEntryRepository.save(any(UrlEntry.class))).thenReturn(urlEntry);
 
-        String shortKey = urlShortenerService.shortenUrl(longUrl, customKey);
+        UrlEntry returnedUrlEntry = urlShortenerService.shortenUrl(longUrl, customKey);
 
-        assertEquals(customKey, shortKey);
+        assertEquals(customKey, returnedUrlEntry.getShortUrl());
     }
 
     @Test
@@ -79,10 +79,10 @@ public class UrlShortenerServiceTest {
 
         when(urlEntryRepository.findByShortUrl(shortKey)).thenReturn(urlEntry);
 
-        String retrievedLongUrl = urlShortenerService.getLongUrl(shortKey);
+        UrlEntry retrievedUrlEntry = urlShortenerService.getUrlEntry(shortKey);
 
-        assertNotNull(retrievedLongUrl);
-        assertEquals(longUrl, retrievedLongUrl);
+        assertNotNull(retrievedUrlEntry);
+        assertEquals(longUrl, retrievedUrlEntry.getLongUrl());
     }
 
     @Test
@@ -92,7 +92,7 @@ public class UrlShortenerServiceTest {
         when(urlEntryRepository.findByShortUrl(shortKey)).thenReturn(null);
 
         assertThrows(UrlNotFoundException.class, () -> {
-            urlShortenerService.getLongUrl(shortKey);
+            urlShortenerService.getUrlEntry(shortKey);
         });
     }
 }

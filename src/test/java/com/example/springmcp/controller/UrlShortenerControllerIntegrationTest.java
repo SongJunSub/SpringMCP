@@ -37,11 +37,13 @@ public class UrlShortenerControllerIntegrationTest extends AbstractIntegrationTe
         request.setLongUrl(longUrl);
 
         // Shorten URL
-        String shortKey = mockMvc.perform(post("/api/shorten")
+        String responseContent = mockMvc.perform(post("/api/shorten")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
+
+        String shortKey = objectMapper.readTree(responseContent).get("shortKey").asText();
 
         // Redirect to original URL
         mockMvc.perform(get("/api/shorten/" + shortKey))
@@ -58,11 +60,14 @@ public class UrlShortenerControllerIntegrationTest extends AbstractIntegrationTe
         request.setCustomKey(customKey);
 
         // Shorten URL with custom key
-        mockMvc.perform(post("/api/shorten")
+        String responseContent = mockMvc.perform(post("/api/shorten")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(content().string(customKey));
+                .andReturn().getResponse().getContentAsString();
+
+        String returnedCustomKey = objectMapper.readTree(responseContent).get("shortKey").asText();
+        assertEquals(customKey, returnedCustomKey);
 
         // Redirect to original URL
         mockMvc.perform(get("/api/shorten/" + customKey))
