@@ -95,4 +95,43 @@ public class UrlShortenerServiceTest {
             urlShortenerService.getUrlEntry(shortKey);
         });
     }
+
+    @Test
+    public void generateUniqueShortKeyShouldRetryUntilUnique() {
+        // Mock the behavior of findByShortUrl to return non-null for the first few calls
+        // and then null for the final call, simulating uniqueness after retries.
+        when(urlEntryRepository.findByShortUrl(anyString()))
+                .thenReturn(new UrlEntry("existing1", "url1")) // Simulate existing key
+                .thenReturn(new UrlEntry("existing2", "url2")) // Simulate another existing key
+                .thenReturn(null); // Finally, a unique key
+
+        // Since generateUniqueShortKey is private, we need to call a public method that uses it.
+        // shortenUrl without custom key uses generateUniqueShortKey.
+        String longUrl = "https://www.test.com";
+        UrlEntry returnedUrlEntry = urlShortenerService.shortenUrl(longUrl);
+
+        assertNotNull(returnedUrlEntry);
+        assertNotNull(returnedUrlEntry.getShortUrl());
+        // Verify that findByShortUrl was called multiple times until a unique key was found
+        verify(urlEntryRepository, atLeast(3)).findByShortUrl(anyString());
+    }
+
+    @Test
+    public void getUrlEntryShouldUseCache() {
+        String shortKey = "cachedKey";
+        String longUrl = "https://www.cachedurl.com";
+        UrlEntry urlEntry = new UrlEntry(shortKey, longUrl);
+
+        // First call: should hit the repository
+        when(urlEntryRepository.findByShortUrl(shortKey)).thenReturn(urlEntry);
+        UrlEntry firstRetrieval = urlShortenerService.getUrlEntry(shortKey);
+        assertEquals(longUrl, firstRetrieval.getLongUrl());
+
+        // Second call: should use the cache, so repository should not be called again
+        UrlEntry secondRetrieval = urlShortenerService.getUrlEntry(shortKey);
+        assertEquals(longUrl, secondRetrieval.getLongUrl());
+
+        // Verify that findByShortUrl was called only once
+        verify(urlEntryRepository, times(1)).findByShortUrl(shortKey);
+    }
 }
