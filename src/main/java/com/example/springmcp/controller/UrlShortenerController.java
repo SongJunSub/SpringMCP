@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +22,7 @@ import java.net.URI;
 @RestController
 @RequestMapping("/api/shorten")
 @Tag(name = "URL Shortener API", description = "Endpoints for URL shortening and redirection")
+@Validated
 public class UrlShortenerController {
 
     private final UrlShortenerService urlShortenerService;
@@ -52,7 +55,7 @@ public class UrlShortenerController {
     @ApiResponse(responseCode = "302", description = "Redirect to original URL")
     @ApiResponse(responseCode = "404", description = "URL not found", content = @Content)
     @GetMapping("/{shortKey}")
-    public ResponseEntity<Void> redirectToLongUrl(@PathVariable @Parameter(description = "The short key of the URL", example = "abc123") String shortKey) {
+    public ResponseEntity<Void> redirectToLongUrl(@PathVariable @Parameter(description = "The short key of the URL", example = "abc123") @Pattern(regexp = "^[a-zA-Z][a-zA-Z0-9]{5}$", message = "Short key must be 6 alphanumeric characters and start with a letter") String shortKey) {
         String longUrl = urlShortenerService.getLongUrl(shortKey);
         if (longUrl != null) {
             return ResponseEntity.status(302).location(URI.create(longUrl)).build();
