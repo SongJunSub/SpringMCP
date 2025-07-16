@@ -3,6 +3,7 @@ plugins {
     id 'org.springframework.boot' version '3.4.4'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'com.diffplug.spotless' version '6.26.0' // Spotless 플러그인 추가
+    id 'jacoco' // JaCoCo 플러그인 추가
 }
 
 group = 'com.example'
@@ -65,6 +66,10 @@ dependencies {
     testImplementation 'org.testcontainers:rabbitmq:1.19.8'
 }
 
+jacoco {
+    toolVersion = "0.8.11" // JaCoCo 도구 버전
+}
+
 spotless {
     java {
         // Google Java Format 사용
@@ -85,4 +90,25 @@ dependencyManagement {
 
 tasks.named('test') {
     useJUnitPlatform()
+    finalizedBy 'jacocoTestReport' // 테스트 실행 후 JaCoCo 보고서 생성
+}
+
+jacocoTestReport {
+    dependsOn tasks.test // 테스트가 먼저 실행되도록 의존성 설정
+    reports {
+        xml.required = true // XML 보고서 생성 (CI에서 사용)
+        html.required = true // HTML 보고서 생성 (로컬에서 확인)
+    }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    'com/example/springmcp/SpringMcpApplication.class',
+                    'com/example/springmcp/model/**', // 모델 클래스 제외
+                    'com/example/springmcp/dto/**',   // DTO 클래스 제외
+                    'com/example/springmcp/exception/**', // 예외 클래스 제외
+                    'com/example/springmcp/config/**', // 설정 클래스 제외
+                    'com/example/springmcp/util/**', // 유틸리티 클래스 제외
+            ])
+        }))
+    }
 }

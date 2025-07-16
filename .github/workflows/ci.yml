@@ -28,6 +28,14 @@ jobs:
       - name: Build and Test with Gradle
         run: ./gradlew clean build
 
+      - name: JaCoCo Test Report
+        run: ./gradlew jacocoTestReport
+      - name: Upload JaCoCo Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: jacoco-report
+          path: build/reports/jacoco/test/html
+
   build-and-push-docker-image:
     needs: build-and-test
     runs-on: ubuntu-latest
