@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.4'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.diffplug.spotless' version '6.26.0' // Spotless 플러그인 추가
 }
 
 group = 'com.example'
@@ -62,6 +63,18 @@ dependencies {
     testImplementation 'org.testcontainers:junit-jupiter:1.19.8'
     testImplementation 'org.testcontainers:mysql:1.19.8'
     testImplementation 'org.testcontainers:rabbitmq:1.19.8'
+}
+
+spotless {
+    java {
+        // Google Java Format 사용
+        googleJavaFormat()
+        // import 순서 정렬
+        removeUnusedImports()
+        // 파일 끝에 새 줄 추가
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
 }
 
 dependencyManagement {
