@@ -1,0 +1,56 @@
+replicaCount: 1
+
+image:
+  repository: your_docker_username/spring-mcp
+  pullPolicy: IfNotPresent
+  tag: latest
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  host: chart-example.local
+  paths:
+    - path: /
+      pathType: ImplementationSpecific
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+mysql:
+  enabled: true
+  image: mysql:8.0
+  database: spring_mcp_db
+  username: root
+  password: password
+
+rabbitmq:
+  enabled: true
+  image: rabbitmq:3-management
+  queue: test-queue
+  username: guest
+  password: guest
+
+chromadb:
+  enabled: true
+  image: ghcr.io/chroma-core/chroma:0.4.18
+  port: 8000

@@ -1,0 +1,72 @@
+{{- if .Values.mysql.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "spring-mcp.fullname" . }}-mysql
+  labels:
+    {{- include "spring-mcp.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mysql
+spec:
+  selector:
+    matchLabels:
+      {{- include "spring-mcp.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "spring-mcp.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: "{{ .Values.mysql.image }}"
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: {{ .Values.mysql.password }}
+            - name: MYSQL_DATABASE
+              value: {{ .Values.mysql.database }}
+            - name: MYSQL_USER
+              value: {{ .Values.mysql.username }}
+            - name: MYSQL_PASSWORD
+              value: {{ .Values.mysql.password }}
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: {{ include "spring-mcp.fullname" . }}-mysql-pv-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "spring-mcp.fullname" . }}-mysql
+  labels:
+    {{- include "spring-mcp.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mysql
+spec:
+  ports:
+    - port: 3306
+  selector:
+    {{- include "spring-mcp.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: mysql
+  clusterIP: None # headless service
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "spring-mcp.fullname" . }}-mysql-pv-claim
+  labels:
+    {{- include "spring-mcp.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mysql
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+{{- end }}

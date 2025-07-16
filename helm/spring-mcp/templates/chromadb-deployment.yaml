@@ -1,0 +1,46 @@
+{{- if .Values.chromadb.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "spring-mcp.fullname" . }}-chromadb
+  labels:
+    {{- include "spring-mcp.labels" . | nindent 4 }}
+    app.kubernetes.io/component: chromadb
+spec:
+  selector:
+    matchLabels:
+      {{- include "spring-mcp.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: chromadb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "spring-mcp.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: chromadb
+    spec:
+      containers:
+        - name: chromadb
+          image: "{{ .Values.chromadb.image }}"
+          env:
+            - name: ANALYTICS_ANONYMOUS_ID
+              value: ""
+          command: ["uvicorn", "chromadb.app:app", "--host", "0.0.0.0", "--port", "{{ .Values.chromadb.port }}"]
+          ports:
+            - containerPort: {{ .Values.chromadb.port }}
+---)
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "spring-mcp.fullname" . }}-chromadb
+  labels:
+    {{- include "spring-mcp.labels" . | nindent 4 }}
+    app.kubernetes.io/component: chromadb
+spec:
+  ports:
+    - port: {{ .Values.chromadb.port }}
+  selector:
+    {{- include "spring-mcp.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: chromadb
+  clusterIP: None
+{{- end }}
