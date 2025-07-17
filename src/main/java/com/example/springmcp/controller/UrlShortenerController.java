@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +27,9 @@ import java.net.URI;
 public class UrlShortenerController {
 
     private final UrlShortenerService urlShortenerService;
+
+    @Value("${app.base-url}")
+    private String baseUrl;
 
     public UrlShortenerController(UrlShortenerService urlShortenerService) {
         this.urlShortenerService = urlShortenerService;
@@ -46,7 +50,7 @@ public class UrlShortenerController {
         } else {
             urlEntry = urlShortenerService.shortenUrl(longUrl);
         }
-        String shortUrl = "http://localhost:8080/api/shorten/" + urlEntry.getShortUrl(); // TODO: Replace with actual domain
+        String shortUrl = baseUrl + "/api/shorten/" + urlEntry.getShortUrl();
         UrlShortenerResponse response = new UrlShortenerResponse(urlEntry.getShortUrl(), urlEntry.getLongUrl(), shortUrl, urlEntry.getCreatedAt());
         return ResponseEntity.created(URI.create("/api/shorten/" + urlEntry.getShortUrl())).body(response);
     }

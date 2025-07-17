@@ -21,6 +21,11 @@ kotlin {
                 implementation(compose.ui)
                 implementation(compose.components.resources)
                 implementation(compose.components.uiToolingPreview)
+
+                // Ktor client dependencies
+                implementation("io.ktor:ktor-client-core:2.3.9")
+                implementation("io.ktor:ktor-client-content-negotiation:2.3.9")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.9")
             }
         }
         val commonTest by getting {
@@ -31,11 +36,13 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
+                implementation("io.ktor:ktor-client-okhttp:2.3.9") // For JVM
             }
         }
         val jsMain by getting {
             dependencies {
                 implementation(compose.html.core)
+                implementation("io.ktor:ktor-client-js:2.3.9") // For JS
             }
         }
     }

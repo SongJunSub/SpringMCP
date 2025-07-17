@@ -87,6 +87,12 @@
 - Dependencies가 추가되었으니 Gradle을 리프레시 해준다.
 - Build 문제가 있을 경우 해당 오류 내용을 다시 질문하여 자동으로 수정한다.
 
+### 설정 외부화
+
+- `application.properties` 파일에 `app.base-url` 속성을 추가하여 애플리케이션의 기본 URL을 설정할 수 있도록 변경했습니다.
+- `UrlShortenerController`에서 `@Value` 어노테이션을 사용하여 `app.base-url` 값을 주입받아 사용합니다.
+- `UrlShortenerApi` 클래스의 생성자를 통해 `baseUrl`을 주입받도록 수정하여, API 클라이언트 사용 시 기본 URL을 동적으로 설정할 수 있도록 변경했습니다.
+
 ### Step 2: env 별로 데이터 저장소 분리
 
 ---
