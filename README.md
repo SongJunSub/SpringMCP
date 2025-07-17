@@ -294,3 +294,14 @@ Resilience4j의 Circuit Breaker를 사용하여 외부 서비스 호출 시 발�
 
 - Dependencies가 추가되었으니 Gradle을 리프레시 해준다.
 - Build 문제가 있을 경우 해당 오류 내용을 다시 질문하여 자동으로 수정한다.
+
+### 웹 관리자 UI
+
+- Kotlin Multiplatform과 Jetpack Compose를 사용하여 웹 관리자 화면을 구현했습니다.
+- **기능**
+    - **URL 단축:** 긴 URL을 입력하고 단축 URL을 생성할 수 있습니다. (사용자 정의 키 옵션 제공)
+    - **URL 목록:** 생성된 단축 URL 목록을 조회할 수 있습니다. (단축 키, 원본 URL, 생성 시간 표시)
+    - **URL 삭제:** 각 URL 항목을 삭제할 수 있습니다.
+- **구현**
+    - `web-admin/src/commonMain/kotlin/com/example/springmcp/webadmin/App.kt` 파일에 UI 및 비즈니스 로직을 구현했습니다.
+    - `UrlShortenerApi`를 사용하여 백엔드 API와 통신합니다.
