@@ -238,6 +238,10 @@ Resilience4j의 Rate Limiter를 사용하여 API 요청 속도를 제한합니�
 
 애플리케이션을 Kubernetes 환경에 배포하기 위한 Manifest 파일들이 `k8s/` 디렉토리에 준비되어 있습니다.
 
+#### CI/CD 파이프라인 구축
+
+GitHub Actions, Jenkins, GitLab CI/CD 등과 같은 도구를 사용하여 CI/CD 파이프라인을 구축할 수 있습니다. 이를 통해 코드 푸시 시 자동으로 빌드, 테스트, 코드 품질 검사를 수행하고, Docker 이미지를 빌드하여 컨테이너 레지스트리에 푸시하며, Kubernetes 환경에 자동으로 배포할 수 있습니다.
+
 - `mysql-deployment.yaml`: MySQL 데이터베이스 배포 및 서비스
 - `rabbitmq-deployment.yaml`: RabbitMQ 메시지 브로커 배포 및 서비스
 - `chromadb-deployment.yaml`: ChromaDB 벡터 데이터베이스 배포 및 서비스
