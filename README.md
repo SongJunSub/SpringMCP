@@ -125,7 +125,7 @@
 **사전 준비:**
 
 1.  Docker Desktop 설치 및 실행
-2.  `docker-compose.yml` 파일의 `SPRING_AI_OPENAI_API_KEY`를 실제 OpenAI API 키로 교체
+2.  `docker-compose.yml` 파일의 `SPRING_AI_OPENAI_API_KEY`를 실제 OpenAI API 키로 교체하거나, `.env` 파일을 생성하여 `OPENAI_API_KEY=YOUR_API_KEY` 형식으로 환경 변수를 설정합니다.
 
 **실행 명령어:**
 

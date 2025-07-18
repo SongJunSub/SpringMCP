@@ -1,7 +1,7 @@
 spring:
   ai:
     openai:
-      api-key: YOUR_API_KEY
+      api-key: ${OPENAI_API_KEY}
     vectorstore:
       chroma:
         url: http://localhost:8000

@@ -42,7 +42,7 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: password
       SPRING_AI_VECTORSTORE_CHROMA_URL: http://chroma:8000
-      SPRING_AI_OPENAI_API_KEY: YOUR_API_KEY # Replace with your actual OpenAI API Key
+      SPRING_AI_OPENAI_API_KEY: ${OPENAI_API_KEY} # Replace with your actual OpenAI API Key
       SPRING_RABBITMQ_HOST: rabbitmq
 
 volumes:
