@@ -145,6 +145,10 @@ Spring Boot Actuator와 Micrometer를 사용하여 애플리케이션 메트릭�
 
 메트릭은 `/actuator/prometheus` 엔드포인트에서 접근할 수 있습니다.
 
+#### 경고 시스템 (Alerting System)
+
+Prometheus Alertmanager와 같은 도구를 사용하여 특정 메트릭(예: 에러율, 응답 시간)이 임계값을 초과할 경우 Slack, PagerDuty 등으로 알림을 보내는 경고 시스템을 구축할 수 있습니다. 이는 문제 발생 시 즉각적인 대응을 가능하게 합니다.
+
 ### 분산 트레이싱 (Distributed Tracing)
 
 Spring Cloud Sleuth를 사용하여 애플리케이션 내의 요청 흐름을 추적하고, Zipkin과 같은 분산 트레이싱 시스템으로 트레이스 정보를 전송합니다.
