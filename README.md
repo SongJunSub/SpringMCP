@@ -191,6 +191,10 @@ Testcontainers를 사용하여 통합 테스트 환경을 구축합니다. 이�
 
 JWT(JSON Web Token) 기반 인증을 도입하여 API 보안을 강화했습니다.
 
+#### CORS 설정
+
+웹 UI와의 통신을 위해 CORS(Cross-Origin Resource Sharing)를 허용하도록 Spring Security에 설정이 추가되었습니다. 현재는 모든 출처를 허용하고 있으며, 운영 환경에서는 특정 출처만 허용하도록 변경해야 합니다.
+
 #### 토큰 발급
 
 `POST /auth/login` 엔드포인트를 사용하여 사용자명(`user`)과 비밀번호(`password`)로 토큰을 발급받을 수 있습니다.
