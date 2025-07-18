@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 
 @RestController
 @Tag(name = "RAG API", description = "Endpoints for Retrieval Augmented Generation")
@@ -17,6 +19,9 @@ public class RagController {
 
     @Autowired
     private UrlEntryRepository urlEntryRepository;
+
+    @Value("classpath:/prompts/rag-prompt.st")
+    private Resource ragPromptResource;
 
     private Set<String> expandQuery(String query) {
         Set<String> expandedQueries = new HashSet<>();
@@ -55,14 +60,7 @@ public class RagController {
                 .distinct() // Remove duplicates based on formatted content
                 .collect(Collectors.joining(System.lineSeparator()));
 
-        PromptTemplate promptTemplate = new PromptTemplate("""
-                Based on the following documents, please answer the user's question.
-                Documents:
-                {documents}
-
-                Question:
-                {query}
-                """);
+        PromptTemplate promptTemplate = new PromptTemplate(ragPromptResource);
         promptTemplate.add("documents", documents);
         promptTemplate.add("query", message);
 
