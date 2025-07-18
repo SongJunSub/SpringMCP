@@ -137,7 +137,7 @@ docker compose up --build
 
 ### 로깅 설정
 
-애플리케이션 로그는 `logback-spring.xml` 설정을 통해 JSON 형식으로 출력됩니다. 이는 로그 분석 도구에서 쉽게 파싱하고 활용할 수 있도록 합니다.
+애플리케이션 로그는 `logback-spring.xml` 설정을 통해 JSON 형식으로 출력됩니다. `logstash-logback-encoder` 의존성을 추가하여 Logstash와 같은 중앙 집중식 로깅 시스템으로 로그를 전송할 수 있도록 준비되었습니다. 이는 로그 분석 도구에서 쉽게 파싱하고 활용할 수 있도록 합니다.
 
 ### 메트릭 수집 (Metrics)
 
