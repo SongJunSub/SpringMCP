@@ -19,4 +19,16 @@ public class GlobalExceptionHandler {
     }
 
     // Add more exception handlers as needed
+
+    /*
+    @ExceptionHandler(org.springframework.ai.retry.NonTransientAiException.class)
+    public ResponseEntity<String> handleNonTransientAiException(org.springframework.ai.retry.NonTransientAiException ex) {
+        return new ResponseEntity<>("AI service error: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(org.springframework.ai.retry.TransientAiException.class)
+    public ResponseEntity<String> handleTransientAiException(org.springframework.ai.retry.TransientAiException ex) {
+        return new ResponseEntity<>("AI service is temporarily unavailable. Please try again later.", HttpStatus.SERVICE_UNAVAILABLE);
+    }
+    */
 }

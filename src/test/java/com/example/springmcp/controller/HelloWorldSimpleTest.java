@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 
 @WebMvcTest(HelloWorldController.class)
-public class HelloWorldControllerTest {
+public class HelloWorldSimpleTest {
 
     @Autowired
     private MockMvc mockMvc;

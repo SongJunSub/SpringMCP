@@ -17,6 +17,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -39,14 +41,15 @@ public class UrlShortenerControllerIntegrationTest extends AbstractIntegrationTe
         // Shorten URL
         String responseContent = mockMvc.perform(post("/api/shorten")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(request))
+                        .with(jwt()))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
 
         String shortKey = objectMapper.readTree(responseContent).get("shortKey").asText();
 
         // Redirect to original URL
-        mockMvc.perform(get("/api/shorten/" + shortKey))
+        mockMvc.perform(get("/api/shorten/" + shortKey).with(jwt()))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl(longUrl));
     }
@@ -62,7 +65,8 @@ public class UrlShortenerControllerIntegrationTest extends AbstractIntegrationTe
         // Shorten URL with custom key
         String responseContent = mockMvc.perform(post("/api/shorten")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(request))
+                        .with(jwt()))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
 
@@ -70,7 +74,7 @@ public class UrlShortenerControllerIntegrationTest extends AbstractIntegrationTe
         assertEquals(customKey, returnedCustomKey);
 
         // Redirect to original URL
-        mockMvc.perform(get("/api/shorten/" + customKey))
+        mockMvc.perform(get("/api/shorten/" + customKey).with(jwt()))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl(longUrl));
     }
@@ -86,19 +90,21 @@ public class UrlShortenerControllerIntegrationTest extends AbstractIntegrationTe
         // First attempt to shorten
         mockMvc.perform(post("/api/shorten")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(request))
+                        .with(jwt()))
                 .andExpect(status().isCreated());
 
         // Second attempt with same custom key
         mockMvc.perform(post("/api/shorten")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(request))
+                        .with(jwt()))
                 .andExpect(status().isConflict());
     }
 
     @Test
     public void redirectToNonExistentUrlShouldReturnNotFound() throws Exception {
-        mockMvc.perform(get("/api/shorten/nonexistent"))
+        mockMvc.perform(get("/api/shorten/nonexistent").with(jwt()))
                 .andExpect(status().isNotFound());
     }
 
@@ -110,7 +116,8 @@ public class UrlShortenerControllerIntegrationTest extends AbstractIntegrationTe
 
         mockMvc.perform(post("/api/shorten")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(request))
+                        .with(jwt()))
                 .andExpect(status().isBadRequest());
     }
 
@@ -124,7 +131,8 @@ public class UrlShortenerControllerIntegrationTest extends AbstractIntegrationTe
 
         mockMvc.perform(post("/api/shorten")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(request))
+                        .with(jwt()))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.customKey").exists()); // Assuming validation error message is in customKey field
     }
@@ -137,7 +145,8 @@ public class UrlShortenerControllerIntegrationTest extends AbstractIntegrationTe
 
         mockMvc.perform(post("/api/shorten")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(request))
+                        .with(jwt()))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.shortKey").exists())
                 .andExpect(jsonPath("$.longUrl").value(longUrl))

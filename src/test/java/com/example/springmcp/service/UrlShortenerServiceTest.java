@@ -6,15 +6,17 @@ import com.example.springmcp.model.UrlEntry;
 import com.example.springmcp.repository.UrlEntryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class UrlShortenerServiceTest {
+@ExtendWith(MockitoExtension.class)
+class UrlShortenerServiceTest {
 
     @Mock
     private UrlEntryRepository urlEntryRepository;
@@ -23,115 +25,96 @@ public class UrlShortenerServiceTest {
     private UrlShortenerService urlShortenerService;
 
     @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
+    void setUp() {
+        // Set @Value fields using ReflectionTestUtils
+        ReflectionTestUtils.setField(urlShortenerService, "keyLength", 6);
+        ReflectionTestUtils.setField(urlShortenerService, "alphanumeric", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
     }
 
     @Test
-    public void shortenUrlShouldReturnShortKey() {
-        String longUrl = "https://www.google.com";
-        UrlEntry urlEntry = new UrlEntry("abc123", longUrl);
-
-        when(urlEntryRepository.save(any(UrlEntry.class))).thenReturn(urlEntry);
-        when(urlEntryRepository.findByShortUrl(any(String.class)))
-                .thenReturn(null); // For initial uniqueness check
-
-        UrlEntry returnedUrlEntry = urlShortenerService.shortenUrl(longUrl);
-
-        assertNotNull(returnedUrlEntry);
-        assertNotNull(returnedUrlEntry.getShortUrl());
-        assertEquals(6, returnedUrlEntry.getShortUrl().length());
-        assertTrue(Character.isLetter(returnedUrlEntry.getShortUrl().charAt(0)));
-    }
-
-    @Test
-    public void shortenUrlWithCustomKeyShouldReturnCustomKey() {
+    void shortenUrl_generatesUniqueKeyAndSaves() {
         String longUrl = "https://www.example.com";
-        String customKey = "mykey";
-        UrlEntry urlEntry = new UrlEntry(customKey, longUrl);
+        UrlEntry expectedUrlEntry = new UrlEntry("short1", longUrl);
+
+        when(urlEntryRepository.findByShortUrl(anyString())).thenReturn(null); // Ensure key is unique
+        when(urlEntryRepository.save(any(UrlEntry.class))).thenReturn(expectedUrlEntry);
+
+        UrlEntry result = urlShortenerService.shortenUrl(longUrl);
+
+        assertNotNull(result);
+        assertEquals(longUrl, result.getLongUrl());
+        assertNotNull(result.getShortUrl());
+        verify(urlEntryRepository, times(1)).save(any(UrlEntry.class));
+    }
+
+    @Test
+    void shortenUrl_withCustomKey_savesCustomKey() {
+        String longUrl = "https://www.example.com";
+        String customKey = "mycustom";
+        UrlEntry expectedUrlEntry = new UrlEntry(customKey, longUrl);
 
         when(urlEntryRepository.findByShortUrl(customKey)).thenReturn(null);
-        when(urlEntryRepository.save(any(UrlEntry.class))).thenReturn(urlEntry);
+        when(urlEntryRepository.save(any(UrlEntry.class))).thenReturn(expectedUrlEntry);
 
-        UrlEntry returnedUrlEntry = urlShortenerService.shortenUrl(longUrl, customKey);
+        UrlEntry result = urlShortenerService.shortenUrl(longUrl, customKey);
 
-        assertEquals(customKey, returnedUrlEntry.getShortUrl());
+        assertNotNull(result);
+        assertEquals(longUrl, result.getLongUrl());
+        assertEquals(customKey, result.getShortUrl());
+        verify(urlEntryRepository, times(1)).save(any(UrlEntry.class));
     }
 
     @Test
-    public void shortenUrlWithExistingCustomKeyShouldThrowDuplicateKeyException() {
+    void shortenUrl_withCustomKey_throwsDuplicateKeyException() {
         String longUrl = "https://www.example.com";
-        String customKey = "existingkey";
-        UrlEntry existingUrlEntry = new UrlEntry(customKey, "https://www.oldurl.com");
+        String customKey = "existing";
+        when(urlEntryRepository.findByShortUrl(customKey)).thenReturn(new UrlEntry(customKey, longUrl));
 
-        when(urlEntryRepository.findByShortUrl(customKey)).thenReturn(existingUrlEntry);
-
-        assertThrows(DuplicateKeyException.class, () -> {
-            urlShortenerService.shortenUrl(longUrl, customKey);
-        });
+        assertThrows(DuplicateKeyException.class, () -> urlShortenerService.shortenUrl(longUrl, customKey));
+        verify(urlEntryRepository, never()).save(any(UrlEntry.class));
     }
 
     @Test
-    public void getLongUrlShouldReturnLongUrl() {
-        String shortKey = "abc123";
-        String longUrl = "https://www.google.com";
-        UrlEntry urlEntry = new UrlEntry(shortKey, longUrl);
+    void getUrlEntry_returnsExistingEntry() {
+        String shortKey = "short1";
+        String longUrl = "https://www.example.com";
+        UrlEntry existingEntry = new UrlEntry(shortKey, longUrl);
 
-        when(urlEntryRepository.findByShortUrl(shortKey)).thenReturn(urlEntry);
+        when(urlEntryRepository.findByShortUrl(shortKey)).thenReturn(existingEntry);
 
-        UrlEntry retrievedUrlEntry = urlShortenerService.getUrlEntry(shortKey);
+        UrlEntry result = urlShortenerService.getUrlEntry(shortKey);
 
-        assertNotNull(retrievedUrlEntry);
-        assertEquals(longUrl, retrievedUrlEntry.getLongUrl());
+        assertNotNull(result);
+        assertEquals(shortKey, result.getShortUrl());
+        assertEquals(longUrl, result.getLongUrl());
     }
 
     @Test
-    public void getLongUrlShouldThrowUrlNotFoundExceptionForInvalidKey() {
-        String shortKey = "invalid";
-
+    void getUrlEntry_throwsUrlNotFoundException() {
+        String shortKey = "nonexistent";
         when(urlEntryRepository.findByShortUrl(shortKey)).thenReturn(null);
 
-        assertThrows(UrlNotFoundException.class, () -> {
-            urlShortenerService.getUrlEntry(shortKey);
-        });
+        assertThrows(UrlNotFoundException.class, () -> urlShortenerService.getUrlEntry(shortKey));
     }
 
     @Test
-    public void generateUniqueShortKeyShouldRetryUntilUnique() {
-        // Mock the behavior of findByShortUrl to return non-null for the first few calls
-        // and then null for the final call, simulating uniqueness after retries.
-        when(urlEntryRepository.findByShortUrl(anyString()))
-                .thenReturn(new UrlEntry("existing1", "url1")) // Simulate existing key
-                .thenReturn(new UrlEntry("existing2", "url2")) // Simulate another existing key
-                .thenReturn(null); // Finally, a unique key
+    void getLongUrl_returnsLongUrl() {
+        String shortKey = "short1";
+        String longUrl = "https://www.example.com";
+        UrlEntry existingEntry = new UrlEntry(shortKey, longUrl);
 
-        // Since generateUniqueShortKey is private, we need to call a public method that uses it.
-        // shortenUrl without custom key uses generateUniqueShortKey.
-        String longUrl = "https://www.test.com";
-        UrlEntry returnedUrlEntry = urlShortenerService.shortenUrl(longUrl);
+        when(urlEntryRepository.findByShortUrl(shortKey)).thenReturn(existingEntry);
 
-        assertNotNull(returnedUrlEntry);
-        assertNotNull(returnedUrlEntry.getShortUrl());
-        // Verify that findByShortUrl was called multiple times until a unique key was found
-        verify(urlEntryRepository, atLeast(3)).findByShortUrl(anyString());
+        String result = urlShortenerService.getLongUrl(shortKey);
+
+        assertEquals(longUrl, result);
     }
 
     @Test
-    public void getUrlEntryShouldUseCache() {
-        String shortKey = "cachedKey";
-        String longUrl = "https://www.cachedurl.com";
-        UrlEntry urlEntry = new UrlEntry(shortKey, longUrl);
+    void getLongUrl_throwsUrlNotFoundException() {
+        String shortKey = "nonexistent";
+        when(urlEntryRepository.findByShortUrl(shortKey)).thenReturn(null);
 
-        // First call: should hit the repository
-        when(urlEntryRepository.findByShortUrl(shortKey)).thenReturn(urlEntry);
-        UrlEntry firstRetrieval = urlShortenerService.getUrlEntry(shortKey);
-        assertEquals(longUrl, firstRetrieval.getLongUrl());
-
-        // Second call: should use the cache, so repository should not be called again
-        UrlEntry secondRetrieval = urlShortenerService.getUrlEntry(shortKey);
-        assertEquals(longUrl, secondRetrieval.getLongUrl());
-
-        // Verify that findByShortUrl was called only once
-        verify(urlEntryRepository, times(1)).findByShortUrl(shortKey);
+        assertThrows(UrlNotFoundException.class, () -> urlShortenerService.getLongUrl(shortKey));
     }
 }

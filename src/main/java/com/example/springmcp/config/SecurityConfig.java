@@ -125,7 +125,11 @@ public class SecurityConfig {
 
     @Bean
     public JwtDecoder jwtDecoder(RSAKey rsaKey) {
-        return NimbusJwtDecoder.withPublicKey(rsaKey.toRSAPublicKey()).build();
+        try {
+            return NimbusJwtDecoder.withPublicKey(rsaKey.toRSAPublicKey()).build();
+        } catch (com.nimbusds.jose.JOSEException e) {
+            throw new IllegalStateException("Failed to create JWT decoder", e);
+        }
     }
 
     @Bean

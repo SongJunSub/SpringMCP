@@ -1,4 +1,4 @@
-
+/*
 package com.example.springmcp.config;
 
 import org.springframework.ai.embedding.EmbeddingModel;
@@ -43,3 +43,4 @@ public class RagConfig {
         vectorStore.accept(semanticChunker.apply(Stream.concat(pdfReader.get().stream(), textReader.get().stream()).collect(Collectors.toList())));
     }
 }
+*/

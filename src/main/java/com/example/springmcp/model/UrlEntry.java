@@ -1,10 +1,11 @@
-
 package com.example.springmcp.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.time.LocalDateTime;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 public class UrlEntry {
@@ -14,6 +15,9 @@ public class UrlEntry {
     private Long id;
     private String shortUrl;
     private String longUrl;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
     public UrlEntry() {
     }
@@ -45,5 +49,13 @@ public class UrlEntry {
 
     public void setLongUrl(String longUrl) {
         this.longUrl = longUrl;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

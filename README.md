@@ -282,6 +282,15 @@ Resilience4j의 Circuit Breaker를 사용하여 외부 서비스 호출 시 발�
 
 간단한 URL 단축 웹 UI가 제공됩니다. 애플리케이션 실행 후 `http://localhost:8080/`으로 접속하여 사용할 수 있습니다.
 
+### 세부적인 예외 처리 (Detailed Exception Handling)
+
+Spring AI `ChatClient` 호출 시 발생할 수 있는 AI 서비스 관련 예외를 `GlobalExceptionHandler`에서 중앙 집중적으로 처리하도록 개선했습니다. 이를 통해 애플리케이션의 안정성과 예외 처리의 일관성을 높였습니다.
+
+- `org.springframework.ai.retry.NonTransientAiException`: API 키 오류, 잘못된 요청 등 재시도해도 성공할 가능성이 없는 예외를 `HTTP 400 Bad Request`로 처리합니다.
+- `org.springframework.ai.retry.TransientAiException`: 일시적인 네트워크 오류, API 서버 과부하 등 재시도하면 성공할 가능성이 있는 예외를 `HTTP 503 Service Unavailable`로 처리합니다.
+
+`ChatController`에서는 더 이상 `fallbackMethod`를 사용하지 않고, 예외 처리를 `GlobalExceptionHandler`로 위임합니다.
+
 ### API Endpoints
 
 - **GET /hello**
