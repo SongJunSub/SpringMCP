@@ -12,6 +12,8 @@ import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.openai.OpenAiChatOptions;
+import com.example.springmcp.service.MetricsService;
+import io.micrometer.core.instrument.Timer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,9 +25,10 @@ import java.util.Map;
 public class ChatController {
 
     private final ChatClient chatClient;
+    private final MetricsService metricsService;
 
     @Autowired
-    public ChatController(ChatClient.Builder chatClientBuilder) {
+    public ChatController(ChatClient.Builder chatClientBuilder, MetricsService metricsService) {
         this.chatClient = chatClientBuilder
                 .defaultOptions(OpenAiChatOptions.builder()
                         .withModel("gpt-4")
@@ -33,6 +36,7 @@ public class ChatController {
                         .withMaxTokens(1000)
                         .build())
                 .build();
+        this.metricsService = metricsService;
     }
 
     @Operation(summary = "Get a response from the AI chatbot", 
@@ -45,11 +49,20 @@ public class ChatController {
             @Parameter(description = "The message to send to the AI", example = "What is the capital of France?") 
             @RequestParam(value = "message", defaultValue = "Tell me a joke") String message) {
         
+        Timer.Sample sample = metricsService.startAiChatTimer();
+        metricsService.recordAiChatRequest();
+        
         try {
             ChatResponse response = chatClient.prompt()
                     .user(message)
                     .call()
                     .chatResponse();
+            
+            // AI 토큰 사용량 기록
+            if (response.getMetadata().getUsage() != null) {
+                long totalTokens = response.getMetadata().getUsage().getTotalTokens();
+                metricsService.recordAiTokensUsed(totalTokens);
+            }
             
             return ResponseEntity.ok(Map.of(
                 "response", response.getResult().getOutput().getContent(),
@@ -57,10 +70,13 @@ public class ChatController {
                 "usage", response.getMetadata().getUsage()
             ));
         } catch (Exception e) {
+            metricsService.recordAiError("chat_error");
             return ResponseEntity.status(500).body(Map.of(
                 "error", "AI 서비스 처리 중 오류가 발생했습니다.",
                 "details", e.getMessage()
             ));
+        } finally {
+            metricsService.recordAiChatTime(sample);
         }
     }
 
