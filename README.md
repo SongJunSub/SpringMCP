@@ -1,33 +1,285 @@
-# Spring MCP
+# Spring MCP - AI-Powered Microservice Platform
+
+[![CI/CD](https://github.com/SongJunSub/SpringMCP/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/SongJunSub/SpringMCP/actions/workflows/ci-cd.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=spring-mcp&metric=alert_status)](https://sonarcloud.io/dashboard?id=spring-mcp)
+[![Coverage](https://codecov.io/gh/SongJunSub/SpringMCP/branch/master/graph/badge.svg)](https://codecov.io/gh/SongJunSub/SpringMCP)
+
+Spring MCP는 **Model Context Protocol (MCP)**을 기반으로 한 고도화된 AI 통합 마이크로서비스 플랫폼입니다. URL 단축 서비스와 AI 기능을 결합하여 현대적인 클라우드 네이티브 아키텍처를 구현한 종합적인 레퍼런스 애플리케이션입니다.
+
+## 🚀 주요 기능
+
+### Core Services
+- **URL Shortener**: 고성능 URL 단축 서비스
+- **AI Chat**: GPT-4 기반 지능형 챗봇
+- **RAG (Retrieval-Augmented Generation)**: 문서 기반 AI 응답 시스템
+- **Document Processing**: PDF/다양한 형식 문서 처리 및 벡터화
+- **Semantic Search**: AI 기반 의미론적 검색
+
+### Enterprise Features
+- **JWT 인증/인가**: Spring Security 기반 보안
+- **Rate Limiting**: Resilience4j 기반 API 제한
+- **Circuit Breaker**: 장애 전파 방지
+- **Distributed Tracing**: Zipkin 기반 분산 추적
+- **Comprehensive Metrics**: Prometheus + Grafana 모니터링
+
+### Cloud-Native Architecture
+- **Kubernetes 배포**: Helm 차트 지원
+- **Docker 컨테이너화**: 멀티 스테이지 빌드
+- **CI/CD Pipeline**: GitHub Actions 자동화
+- **Multi-Environment**: Development, Staging, Production
+
+## 🛠 기술 스택
+
+### Backend
+- **Java 17** + **Spring Boot 3.2.5**
+- **Spring AI** - OpenAI GPT-4 통합
+- **Spring Security** - JWT 인증/인가
+- **Spring Data JPA** - 데이터 접근 계층
+- **Resilience4j** - 회복성 패턴 (Circuit Breaker, Rate Limiter)
+
+### AI & ML
+- **OpenAI GPT-4** - 언어 모델
+- **ChromaDB** - 벡터 데이터베이스
+- **Spring AI** - AI 통합 프레임워크
+- **Semantic Search** - 벡터 기반 검색
+
+### Infrastructure
+- **MySQL 8.0** - 관계형 데이터베이스
+- **RabbitMQ** - 메시지 브로커
+- **Redis** - 캐싱 (선택사항)
+- **Docker** + **Docker Compose** - 컨테이너화
+
+### Monitoring & Observability
+- **Prometheus** - 메트릭 수집
+- **Grafana** - 시각화 대시보드
+- **Zipkin** - 분산 추적
+- **Micrometer** - 애플리케이션 메트릭
+
+### DevOps & Deployment
+- **Kubernetes** - 컨테이너 오케스트레이션
+- **Helm** - Kubernetes 패키지 매니저
+- **GitHub Actions** - CI/CD 파이프라인
+- **OWASP Dependency Check** - 보안 스캔
+
+## 🚀 빠른 시작
+
+### 전제 조건
+- Java 17+
+- Docker & Docker Compose
+- OpenAI API 키
+
+### 1. 프로젝트 클론
+```bash
+git clone https://github.com/SongJunSub/SpringMCP.git
+cd SpringMCP
+```
+
+### 2. 환경 설정
+```bash
+# OpenAI API 키 설정
+export OPENAI_API_KEY="your-openai-api-key"
+
+# Docker Compose 설정 파일 업데이트
+cp docker-compose.yml docker-compose.yml.bak
+sed -i 's/YOUR_API_KEY/your-openai-api-key/g' docker-compose.yml
+```
+
+### 3. 애플리케이션 실행
+```bash
+# 인프라 서비스 시작
+docker compose up -d mysql rabbitmq chroma prometheus grafana zipkin
+
+# 애플리케이션 빌드 및 실행
+./gradlew bootRun
+```
+
+### 4. 서비스 접근
+- **애플리케이션**: http://localhost:8080
+- **Swagger UI**: http://localhost:8080/swagger-ui.html
+- **Actuator 헬스**: http://localhost:8080/actuator/health
+- **Prometheus**: http://localhost:9090
+- **Grafana**: http://localhost:3000 (admin/admin)
+- **RabbitMQ Management**: http://localhost:15672 (guest/guest)
+- **Zipkin**: http://localhost:9411
+
+## 📋 API 엔드포인트
+
+### URL Shortener
+```http
+POST /api/shorten
+GET /api/shorten/{shortKey}
+```
+
+### AI Services
+```http
+GET /api/chat?message=hello
+POST /api/chat/template
+GET /api/chat/stream
+```
+
+### RAG (Retrieval-Augmented Generation)
+```http
+GET /api/rag?message=what is spring ai
+POST /api/rag/documents
+GET /api/rag/search
+```
+
+### Document Processing
+```http
+POST /api/documents/upload/pdf
+POST /api/documents/upload/document
+POST /api/documents/process/text
+POST /api/documents/process/url
+```
+
+### Semantic Search
+```http
+GET /api/semantic/search
+POST /api/semantic/search/advanced
+POST /api/semantic/search/compare
+```
+
+### Metrics & Monitoring
+```http
+GET /api/metrics/summary
+GET /api/metrics/ai
+GET /api/metrics/urls
+GET /actuator/prometheus
+```
+
+## 🔧 설정 및 환경변수
+
+### 필수 환경변수
+```bash
+OPENAI_API_KEY=your-openai-api-key
+SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/spring_mcp_db
+SPRING_DATASOURCE_USERNAME=root
+SPRING_DATASOURCE_PASSWORD=password
+```
+
+### 선택적 환경변수
+```bash
+SPRING_AI_VECTORSTORE_CHROMA_URL=http://localhost:8000
+SPRING_RABBITMQ_HOST=localhost
+SPRING_ZIPKIN_BASE_URL=http://localhost:9411
+```
+
+## 🐳 Docker 배포
+
+### Docker Compose 전체 스택
+```bash
+docker compose up --build
+```
+
+### 개별 서비스 실행
+```bash
+# 인프라만 실행
+docker compose up -d mysql rabbitmq chroma
+
+# 모니터링 스택만 실행
+docker compose up -d prometheus grafana zipkin
+```
+
+## ☸️ Kubernetes 배포
+
+### Helm을 사용한 배포
+```bash
+# 네임스페이스 생성
+kubectl create namespace spring-mcp
+
+# Helm 배포
+helm install spring-mcp ./helm/spring-mcp \
+  --namespace spring-mcp \
+  --set config.openai.apiKey=your-api-key \
+  --set ingress.host=spring-mcp.example.com
+```
+
+### 배포 확인
+```bash
+kubectl get pods -n spring-mcp
+kubectl get services -n spring-mcp
+kubectl get ingress -n spring-mcp
+```
+
+## 📊 모니터링 및 메트릭
+
+### Prometheus 메트릭
+- `url_shortened_total` - 단축된 URL 총 개수
+- `ai_chat_requests_total` - AI 채팅 요청 수
+- `ai_rag_requests_total` - RAG 요청 수
+- `documents_processed_total` - 처리된 문서 수
+- `search_requests_total` - 검색 요청 수
+
+### Grafana 대시보드
+미리 구성된 대시보드가 `monitoring/grafana-dashboard.json`에 포함되어 있습니다.
+
+### 분산 추적
+Zipkin UI에서 요청 흐름을 추적할 수 있습니다.
+
+## 🧪 테스트
+
+### 단위 테스트 실행
+```bash
+./gradlew test
+```
+
+### 통합 테스트 실행
+```bash
+./gradlew integrationTest
+```
+
+### 코드 커버리지 확인
+```bash
+./gradlew jacocoTestReport
+open build/reports/jacoco/test/html/index.html
+```
+
+### 보안 스캔
+```bash
+./gradlew dependencyCheckAnalyze
+```
+
+## 🔐 보안
+
+### 인증 및 인가
+JWT 토큰 기반 인증이 구현되어 있습니다.
+
+```bash
+# 토큰 발급
+curl -X POST http://localhost:8080/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"user","password":"password"}'
+
+# 인증이 필요한 API 호출
+curl -X GET http://localhost:8080/api/chat?message=hello \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+### 보안 헤더
+기본 보안 헤더들이 Spring Security에 의해 자동으로 추가됩니다.
+
+## 🤝 기여하기
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 라이선스
+
+이 프로젝트는 MIT 라이선스 하에 제공됩니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참고하세요.
+
+## 📞 지원
+
+- **Issues**: [GitHub Issues](https://github.com/SongJunSub/SpringMCP/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/SongJunSub/SpringMCP/discussions)
+
 ---
 
-- Spring AI에서 제공하는 **Context-Aware Prompting** 메커니즘으로, 모델이 단순한 프롬프트 처리만 하는 것이 아니라, 외부 문맥 정보 (Ex. 벡터 검색 결과)를 포함해서 프롬프트를 구성할 수 있도록 하는 즉, **Prompt + Context + Options을 하나의 구조로 묶는** 표준화된 구조이다.
-- Model Context Protocol (MCP)은 LLM 애플리케이션과 외부 데이터 소스 및 도구들 간의 원활한 통합을 가능하게 하는 개방형 프로토콜입니다. AI 기반 IDE, 채팅 인터페이스, 커스텀 AI 워크플로우 등에서 LLM이 필요한 컨텍스트와 연결하기 위한 표준화된 방법을 제공합니다.
-- RAG를 구현할 때, context-aware 모델 요청을 쉽게 만들 수 있습니다.
-- **주요 구성 요소**
-    - Spring AI에서 제공하는 VectorStore, RetrievalAugmentor, ModelRequest, ModelResponse 등이 그 기반을 이룹니다.
-    - **Prompt**
-        - 질문과 기본 입력을 포함한 텍스트
-    - **Context**
-        - 외부 지식 소스에서 검색된 문서들
-    - **ModelRequest**
-        - Prompt + Context + 옵션 설정 포함
-    - **ModelResponse**
-        - 모델 응답, 사용된 문맥 포함 가능
-- **대표적인 사용 시나리오**
-    - **RAG (검색 기반 응답 생성)**
-        - 질문을 벡터로 변환하여 관련 문서를 찾고 그 문서를 프롬프트에 포함시켜 응답을 생성하는 구조
-        - 예: SSG API 문서 벡터화 → 검색 → GPT 응답에 삽입
-    - **ChatBot with 기억 기능**
-        - 과거 대화 내용을 문맥으로 전달하여 일관성 있는 답변 제공
-    - **문서 요약/분석**
-        - 특정 문서나 섹션을 프롬프트에 삽입하여 요약 요청
+## 🔧 MCP 연동 (Claude Desktop)
 
-### Step 0: MCP 연동
-
----
-
-- **Claude 설치 및 설정**
+### Claude 설치 및 설정
     - Claude Desktop 설치
         - https://claude.ai/download
     - 로그인 → 설정 → 개발자 → 설정 편집
