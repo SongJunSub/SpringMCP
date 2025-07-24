@@ -1,4 +1,4 @@
-replicaCount: 1
+replicaCount: 2
 
 image:
   repository: your_docker_username/spring-mcp
@@ -8,27 +8,37 @@ image:
 service:
   type: ClusterIP
   port: 8080
+  targetPort: 8080
 
 ingress:
-  enabled: false
-  className: ""
-  annotations: {}
-  host: chart-example.local
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  host: spring-mcp.example.com
   paths:
     - path: /
-      pathType: ImplementationSpecific
+      pathType: Prefix
+  tls:
+    enabled: true
+    secretName: spring-mcp-tls
 
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
 
 nodeSelector: {}
 
@@ -52,5 +62,106 @@ rabbitmq:
 
 chromadb:
   enabled: true
-  image: ghcr.io/chroma-core/chroma:0.4.18
+  image: ghcr.io/chroma-core/chroma:latest
   port: 8000
+
+monitoring:
+  prometheus:
+    enabled: true
+    image: prom/prometheus:latest
+    port: 9090
+    retention: "30d"
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+  
+  grafana:
+    enabled: true
+    image: grafana/grafana:latest
+    port: 3000
+    adminPassword: "admin123"
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+  
+  zipkin:
+    enabled: true
+    image: openzipkin/zipkin:latest
+    port: 9411
+    resources:
+      limits:
+        cpu: 300m
+        memory: 512Mi
+      requests:
+        cpu: 150m
+        memory: 256Mi
+
+config:
+  openai:
+    apiKey: ""  # Set this in production
+  
+  spring:
+    profiles:
+      active: "kubernetes"
+    
+  logging:
+    level:
+      com.example.springmcp: INFO
+      org.springframework.ai: DEBUG
+  
+  management:
+    endpoints:
+      web:
+        exposure:
+          include: "health,info,prometheus,metrics"
+
+persistence:
+  mysql:
+    enabled: true
+    storageClass: ""
+    size: 10Gi
+    accessMode: ReadWriteOnce
+  
+  prometheus:
+    enabled: true
+    storageClass: ""
+    size: 50Gi
+    accessMode: ReadWriteOnce
+  
+  grafana:
+    enabled: true
+    storageClass: ""
+    size: 10Gi
+    accessMode: ReadWriteOnce
+
+serviceMonitor:
+  enabled: true
+  namespace: monitoring
+  interval: 30s
+  path: /actuator/prometheus
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+networkPolicy:
+  enabled: false
+  ingress: []
+  egress: []
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000

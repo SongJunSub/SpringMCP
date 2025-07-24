@@ -3,6 +3,7 @@ plugins {
     id 'org.springframework.boot' version '3.2.5'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'jacoco' // JaCoCo 플러그인 추가
+    id 'org.owasp.dependencycheck' version '8.4.0' // OWASP 의존성 체크
 }
 
 group = 'com.example'
@@ -92,4 +93,34 @@ jacocoTestReport {
             ])
         }))
     }
+}
+
+// OWASP Dependency Check 설정
+dependencyCheck {
+    format = 'ALL'
+    suppressionFile = 'owasp-suppression.xml'
+    failBuildOnCVSS = 7.0
+    analyzers {
+        centralEnabled = true
+        ossIndexEnabled = true
+    }
+}
+
+// Docker 이미지 빌드 태스크
+task buildDockerImage(type: Exec) {
+    dependsOn bootJar
+    group 'build'
+    description 'Build Docker image'
+    
+    commandLine 'docker', 'build', '-t', "spring-mcp:${version}", '.'
+}
+
+// Helm 배포 태스크
+task helmDeploy(type: Exec) {
+    group 'deployment'
+    description 'Deploy using Helm'
+    
+    commandLine 'helm', 'upgrade', '--install', 'spring-mcp', './helm/spring-mcp',
+            '--set', "image.tag=${version}",
+            '--wait'
 }
